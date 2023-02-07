@@ -1,0 +1,18 @@
+{% extends 'app_users/base.html'%}
+
+{% block title %}
+    Загрузка аватара
+{% endblock %}
+
+{% block body %}
+    <h1>Загрузка аватара</h1>
+    {% if request.user.is_authenticated %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Сохранить</button>
+        </form>
+    {% else %}
+        <p>Вы не авторизованы.</p>
+    {% endif %}
+{% endblock %}

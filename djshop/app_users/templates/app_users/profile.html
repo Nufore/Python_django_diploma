@@ -1,0 +1,15 @@
+{% extends 'app_users/base.html' %}
+
+{% block title %}
+    Profile
+{% endblock %}
+
+{% block body %}
+    <h2>Профиль</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      {{ change_password_form.as_p }}
+      <button type="submit">Сохранить</button>
+    </form>
+{% endblock %}

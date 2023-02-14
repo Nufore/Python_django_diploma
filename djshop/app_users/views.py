@@ -32,7 +32,7 @@ def register_view(request):
 
 class Account(View):
     def get(self, request):
-        return render(request, 'app_users/account_.html')
+        return render(request, 'app_users/account.html')
 
 
 class UserLoginView(LoginView):

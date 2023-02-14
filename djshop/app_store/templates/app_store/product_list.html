@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <h1>Товары</h1>
+
+    {% if product_list %}
+    <ul>
+
+        {% for product in product_list %}
+        <li>
+            <a href="/store/product/{{ product.id }}">{{ product.name }}</a>
+        </li>
+        <br>
+        {% endfor %}
+
+    </ul>
+    {% else %}
+        <p>Товаров нет.</p>
+    {% endif %}
+</html>

@@ -5,6 +5,9 @@ from django.contrib.auth.models import User
 class ProductCategory(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
@@ -16,11 +19,20 @@ class Product(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     manufacturer = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.name
+
+
+class ProductPictures(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    image = models.ImageField(default=None, null=True, upload_to='product_pictures/')
+
 
 class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     text = models.TextField(null=False)
+    added_at = models.DateTimeField(auto_now_add=True)
 
 
 class Cart(models.Model):

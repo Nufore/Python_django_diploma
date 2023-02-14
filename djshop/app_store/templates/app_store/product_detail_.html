@@ -1,0 +1,322 @@
+{% extends 'app_store/base.html' %}
+{% load static %}
+
+{% block middle %}
+<div class="Middle Middle_top">
+    <div class="Middle-top">
+        <div class="wrap">
+            <div class="Middle-header">
+                <h1 class="Middle-title">Megano Product</h1>
+                <ul class="breadcrumbs Middle-breadcrumbs">
+                    <li class="breadcrumbs-item"><a href="index.html">home</a></li>
+                    <li class="breadcrumbs-item breadcrumbs-item_current">
+                        <span>Product</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="Section">
+        <div class="wrap">
+            <div class="Product">
+                <div class="ProductCard">
+                    <div class="ProductCard-look">
+                        <div class="ProductCard-photo">
+                            <img
+                                    src="../../../media/{{ object.picture }}"
+                                    alt="bigGoods.png"
+                            />
+                        </div>
+                        <div class="ProductCard-picts">
+<!--                            <a class="ProductCard-pict ProductCard-pict_ACTIVE" href="{% static 'assets/img/content/home/bigGoods.png' %}">-->
+<!--                                <img src="{% static 'assets/img/content/home/bigGoods.png' %}" alt="bigGoods.png"/>-->
+<!--                            </a>-->
+<!--                            <a class="ProductCard-pict" href="{% static 'assets/img/content/home/slider.png' %}">-->
+<!--                                <img src="{% static 'assets/img/content/home/slider.png' %}" alt="slider.png"/>-->
+<!--                            </a>-->
+<!--                            <a class="ProductCard-pict" href="{% static 'assets/img/content/home/videoca.png' %}">-->
+<!--                                <img src="{% static 'assets/img/content/home/videoca.png' %}" alt="videoca.png"/>-->
+<!--                            </a>-->
+                            {% for picture in pictures %}
+                                <a class="ProductCard-pict ProductCard-pict_ACTIVE" href="../../../media/{{ picture.image }}">
+                                    <img src="../../../media/{{ picture.image }}" alt="bigGoods.png"/>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="ProductCard-desc">
+                        <div class="ProductCard-header">
+                            <h2 class="ProductCard-title">
+                                {{ object.name }}
+                            </h2>
+                            <div class="ProductCard-info">
+                                <div class="ProductCard-cost">
+                                    <div class="ProductCard-price">${{object.price}}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ProductCard-text">
+<!--                            <ul>-->
+<!--                                <li>-->
+<!--                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit,-->
+<!--                                    eiusmod-->
+<!--                                </li>-->
+<!--                                <li>-->
+<!--                                    tempor incididunt ut labore et dolore magna aliqua. Lorem-->
+<!--                                </li>-->
+<!--                                <li>-->
+<!--                                    ipsum dolor sit ameabore et dolore magna aliqua. Lorem-->
+<!--                                    ipsum-->
+<!--                                </li>-->
+<!--                            </ul>-->
+                            {{ object.description }}
+                        </div>
+                        <div class="ProductCard-cart">
+                            <div class="ProductCard-cartElement ProductCard-cartElement_amount">
+                                <div class="Amount Amount_product">
+                                    <button class="Amount-remove" type="button"></button>
+                                    <input
+                                            class="Amount-input form-input"
+                                            name="amount"
+                                            type="text"
+                                            value="1"
+                                    />
+                                    <button class="Amount-add" type="button"></button>
+                                </div>
+                            </div>
+                            <div class="ProductCard-cartElement">
+                                <a class="btn btn_primary" href="#"
+                                ><img
+                                        class="btn-icon"
+                                        src="{% static 'assets/img/icons/card/cart_white.svg' %}"
+                                        alt="cart_white.svg"
+                                /><span class="btn-content">Add To Cart</span></a
+                                >
+                            </div>
+                        </div>
+                        <div class="ProductCard-footer">
+                            <div class="ProductCard-tags">
+                                <strong class="ProductCard-tagsTitle">Tags: </strong>
+                                <a href="#">Accesories</a>,
+                                <a href="#">Creative</a>,
+                                <a href="#">Design</a>,
+                                <a href="#">Gaming</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="Tabs Tabs_default">
+                    <div class="Tabs-links">
+                        <a class="Tabs-link_ACTIVE Tabs-link" href="#description"><span>Описание</span></a>
+                        <a class="Tabs-link" href="#addit"><span>AdditionaL Info</span></a>
+                        <a class="Tabs-link" href="#reviews"><span>Reviews ({{ rev_count }})</span></a>
+                    </div>
+                    <div class="Tabs-wrap">
+                        <div class="Tabs-block" id="description">
+                            <h2>{{ object.name }}</h2>
+                            <p>
+<!--                                Lorem ipsum dolor sit amet, consectetuer&#32;-->
+<!--                                <strong>adipiscing </strong>&#32;elit doli. Aenean commodo-->
+<!--                                ligula eget dolor. Aenean massa.&#32;<a href="#">Cumtipsu</a-->
+<!--                            >&#32;sociis natoque penatibus et magnis dis parturient-->
+<!--                                montesti, nascetur ridiculus mus. Donec quam felis,-->
+<!--                                ultricies nec, pellentesque eutu, pretiumem.-->
+                            {{ object.description }}
+                            </p>
+                            <img
+                                    class="pict pict_right"
+                                    src="../../../media/{{ object.picture }}"
+                                    alt="bigGoods.png"
+                            />
+                            <ul>
+                                <li>Lorem ipsum dolor sit amet, consectetuer</li>
+                                <li>
+                                    adipiscing elit doli.&#32;<em>Aenean</em>&#32;commodo
+                                    ligula
+                                </li>
+                                <li>eget dolor. Aenean massa. Cumtipsu sociis</li>
+                                <li>natoque penatibus et magnis dis parturient</li>
+                                <li>montesti, nascetur ridiculus mus. Donec</li>
+                                <li>quam felis, ultricies nec, pellentesque eutu</li>
+                            </ul>
+                            <div class="clearfix"></div>
+                            <div class="table">
+                                <table>
+                                    <tr>
+                                        <th>Характеристика</th>
+                                        <th>Значение</th>
+                                    </tr>
+                                    <tr>
+                                        <td>ADDED AT</td>
+                                        <td>{{ object.added_at }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="Tabs-block" id="sellers">
+                            <div class="Categories Categories_product"></div>
+                        </div>
+                        <div class="Tabs-block" id="addit">
+                            <div class="Product-props">
+                                <div class="Product-prop">
+                                    <strong>Name</strong>
+                                    <span>{{ object.name }}</span>
+                                </div>
+                                <div class="Product-prop">
+                                    <strong>category</strong>
+                                    <span>{{ object.category }}</span>
+                                </div>
+                                <div class="Product-prop">
+                                    <strong>manufacturer</strong>
+                                    <span>{{ object.manufacturer }}</span>
+                                </div>
+                                <div class="Product-prop">
+                                    <strong>added at</strong>
+                                    <span>{{ object.added_at }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Tabs-block" id="reviews">
+                            <header class="Section-header">
+                                {% if rev_count == 1 %}
+                                    <h3 class="Section-title">1 Review</h3>
+                                {% else %}
+                                    <h3 class="Section-title">{{ rev_count }} Reviews</h3>
+                                {% endif %}
+                            </header>
+                            <div class="Comments">
+                                {% for review in reviews %}
+                                <div class="Comment">
+                                    <div class="Comment-column Comment-column_pict">
+                                        {% if review.user.profile.avatar %}
+                                            <div style="width: 99px;
+                                                    height: 99px;
+                                                    border-radius: 100px;
+                                                    background: url('../../../media/{{ review.user.profile.avatar }}');
+                                                    background-size: cover;
+                                                    background-position: top center;">
+                                            </div>
+                                        {% else %}
+                                            <div class="Comment-avatar"></div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="Comment-column">
+                                        <header class="Comment-header">
+                                            <div>
+                                                <strong class="Comment-title">{{ review.user.first_name }} {{ review.user.last_name }}</strong>
+                                                <span class="Comment-date">{{ review.added_at|date:"F d / Y / H:i" }}</span>
+                                            </div>
+                                        </header>
+                                        <div class="Comment-content">
+                                            {{ review.text }}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <header class="Section-header Section-header_product">
+                                <h3 class="Section-title">Add Review</h3>
+                            </header>
+                            <div class="Tabs-addComment">
+                                {% if request.user.is_authenticated %}
+                                    <form class="form" action="#" method="post">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+<!--                                            <textarea-->
+<!--                                                    class="form-textarea"-->
+<!--                                                    name="review"-->
+<!--                                                    id="review"-->
+<!--                                                    placeholder="Review"-->
+<!--                                            ></textarea>-->
+                                            {{ rev_form.text }}
+                                        </div>
+<!--                                        <div class="form-group">-->
+<!--                                            <div class="row">-->
+<!--                                                <div class="row-block">-->
+<!--                                                    <input-->
+<!--                                                            class="form-input"-->
+<!--                                                            id="name"-->
+<!--                                                            name="name"-->
+<!--                                                            type="text"-->
+<!--                                                            placeholder="Name"-->
+<!--                                                    />-->
+<!--                                                </div>-->
+<!--                                                <div class="row-block">-->
+<!--                                                    <input-->
+<!--                                                            class="form-input"-->
+<!--                                                            id="email"-->
+<!--                                                            name="email"-->
+<!--                                                            type="text"-->
+<!--                                                            placeholder="Email"-->
+<!--                                                    />-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+                                        <div class="form-group">
+                                            <button class="btn btn_muted" type="submit">
+                                                Submit Review
+                                            </button>
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <div style="display: inline-flex;
+                                              align-items: center;
+                                              justify-content: center;
+                                              min-height: 42px;
+                                              border: 1px solid #fff;
+                                              border-color: #fff;
+                                              border-radius: 100px;
+                                              background: #fff;
+                                              padding: 3px 15px;
+                                              line-height: 1.2em;
+                                              text-align: center;
+                                              color: #424650;
+                                              text-decoration: none;
+                                              position: relative;
+                                              font-size: 16px;
+                                              border-color: #fff;
+                                              color: #424650;
+                                              background: #fff;
+                                              transition: all 200ms;
+                                              font-weight: 500;
+                                              text-transform: uppercase;
+                                              letter-spacing: 0.8px;
+                                              padding-left: 38px;
+                                              border-color: #e8eaef;
+                                              color: #7c8088;
+                                              background: #e8eaef;
+                                              transition: all 200ms;">
+                                        Чтобы оставить отзыв необходимо <a style="display: inline-flex;
+                                              align-items: center;
+                                              justify-content: center;
+                                              min-height: 42px;
+                                              border: 1px solid #fff;
+                                              border-color: #fff;
+                                              border-radius: 100px;
+                                              background: #fff;
+                                              padding: 0px 3px;
+                                              line-height: 1.2em;
+                                              text-align: center;
+                                              text-decoration: none;
+                                              position: relative;
+                                              font-size: 16px;
+                                              transition: all 200ms;
+                                              font-weight: 500;
+                                              text-transform: uppercase;
+                                              letter-spacing: 0.8px;
+                                              padding-right: 38px;
+                                              border-color: #e8eaef;
+                                              color: #0063d1;
+                                              background: #e8eaef;
+                                              transition: all 200ms;" href="{% url 'login' %}">авторизоваться</a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

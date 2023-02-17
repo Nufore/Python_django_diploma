@@ -8,3 +8,6 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=20, unique=True)
     account_balance = models.FloatField(default=0.0, null=False)
     avatar = models.ImageField(default=None, null=True, upload_to='avatars/')
+
+    def __str__(self):
+        return f'{self.user.id}'

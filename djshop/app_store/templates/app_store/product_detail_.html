@@ -184,36 +184,47 @@
                                     <h3 class="Section-title">{{ rev_count }} Reviews</h3>
                                 {% endif %}
                             </header>
-                            <div class="Comments">
+                            <div class="Comments allreviews">
                                 {% for review in reviews %}
-                                <div class="Comment">
-                                    <div class="Comment-column Comment-column_pict">
-                                        {% if review.user.profile.avatar %}
-                                            <div style="width: 99px;
-                                                    height: 99px;
-                                                    border-radius: 100px;
-                                                    background: url('../../../media/{{ review.user.profile.avatar }}');
-                                                    background-size: cover;
-                                                    background-position: top center;">
+                                    {% if forloop.last %}
+                                    <div class="Comment reviews last-review" data-review-id="{{ review.id }}">
+                                    {% else %}
+                                    <div class="Comment reviews">
+                                    {% endif %}
+                                        <div class="Comment-column Comment-column_pict">
+                                            {% if review.user.profile.avatar %}
+                                                <div style="width: 99px;
+                                                        height: 99px;
+                                                        border-radius: 100px;
+                                                        background: url('../../../media/{{ review.user.profile.avatar }}');
+                                                        background-size: cover;
+                                                        background-position: top center;">
+                                                </div>
+                                            {% else %}
+                                                <div class="Comment-avatar"></div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="Comment-column">
+                                            <header class="Comment-header">
+                                                <div>
+                                                    <strong class="Comment-title">{{ review.user.first_name }} {{ review.user.last_name }}</strong>
+                                                    <span class="Comment-date">{{ review.added_at|date:"F d / Y / H:i" }}</span>
+                                                </div>
+                                            </header>
+                                            <div class="Comment-content">
+                                                {{ review.text }}
                                             </div>
-                                        {% else %}
-                                            <div class="Comment-avatar"></div>
-                                        {% endif %}
-                                    </div>
-                                    <div class="Comment-column">
-                                        <header class="Comment-header">
-                                            <div>
-                                                <strong class="Comment-title">{{ review.user.first_name }} {{ review.user.last_name }}</strong>
-                                                <span class="Comment-date">{{ review.added_at|date:"F d / Y / H:i" }}</span>
-                                            </div>
-                                        </header>
-                                        <div class="Comment-content">
-                                            {{ review.text }}
                                         </div>
                                     </div>
-                                </div>
                                 {% endfor %}
                             </div>
+                            {% if reviews.count >= 2 %}
+                                <div class="form-group">
+                                    <button class="btn btn_muted load-more" id="load-more">
+                                        Load more
+                                    </button>
+                                </div>
+                            {% endif %}
                             <header class="Section-header Section-header_product">
                                 <h3 class="Section-title">Add Review</h3>
                             </header>
@@ -319,4 +330,123 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block addition %}
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+
+<script>
+    $('#load-more').on('click', function (){
+        let lastReviewId = $('.last-review').attr('data-review-id')
+        let data = {
+            lastReviewId: lastReviewId
+        }
+        $('.reviews').removeClass('last-review')
+        $('.reviews').removeAttr('data-review-id')
+        $.ajax({
+            method: "GET",
+            dataType: "json",
+            data: data,
+            url: '{% url "load-more-reviews" %}',
+            success: function (data){
+                let result = data['data']
+                if(!result){
+                    $('.load-more').css('display', 'none')
+                } else {
+                    $.each(result, function(key, obj){
+                        if(obj['last-review']){
+                            if(obj['avatar']){
+                                $('.allreviews').append(
+                                    '<div class="Comment reviews last-review" data-review-id="' + obj['id'] +'">' +
+                                    '<div class="Comment-column Comment-column_pict">' +
+                                    '<div style="width: 99px;' +
+                                                'height: 99px;' +
+                                                'border-radius: 100px;' +
+                                                'background: url(\'\.\.\/\.\.\/\.\.\/media\/' + obj['avatar'] + '\');' +
+                                                'background-size: cover;' +
+                                                'background-position: top center;">' +
+                                    '</div>' +
+                                    '</div>'+
+                                    '<div class="Comment-column">' +
+                                        '<header class="Comment-header">' +
+                                            '<div>' +
+                                                '<strong class="Comment-title">' + obj['first_name'] +' ' + obj['last_name'] +'</strong>' +
+                                                '<span class="Comment-date">' + obj['added_at'] + '</span>'+
+                                            '</div>' +
+                                        '</header>' +
+                                        '<div class="Comment-content">' +
+                                            obj['text'] +
+                                        '</div>'+
+                                    '</div>'
+                                )
+                            } else {
+                                $('.allreviews').append(
+                                    '<div class="Comment reviews last-review" data-review-id="' + obj['id'] +'">' +
+                                    '<div class="Comment-column Comment-column_pict">' +
+                                    '<div class="Comment-avatar"></div>' +
+                                    '</div>'+
+                                    '<div class="Comment-column">' +
+                                        '<header class="Comment-header">' +
+                                            '<div>' +
+                                                '<strong class="Comment-title">' + obj['first_name'] +' ' + obj['last_name'] +'</strong>' +
+                                                '<span class="Comment-date">' + obj['added_at'] + '</span>'+
+                                            '</div>' +
+                                        '</header>' +
+                                        '<div class="Comment-content">' +
+                                            obj['text'] +
+                                        '</div>'+
+                                    '</div>'
+                                )
+                            }
+                        } else {
+                            if(obj['avatar']){
+                                $('.allreviews').append(
+                                    '<div class="Comment reviews">' +
+                                    '<div class="Comment-column Comment-column_pict">' +
+                                    '<div style="width: 99px;' +
+                                                'height: 99px;' +
+                                                'border-radius: 100px;' +
+                                                'background: url(\'\.\.\/\.\.\/\.\.\/media\/' + obj['avatar'] + '\');' +
+                                                'background-size: cover;' +
+                                                'background-position: top center;">' +
+                                    '</div>' +
+                                    '</div>'+
+                                    '<div class="Comment-column">' +
+                                        '<header class="Comment-header">' +
+                                            '<div>' +
+                                                '<strong class="Comment-title">' + obj['first_name'] +' ' + obj['last_name'] +'</strong>' +
+                                                '<span class="Comment-date">' + obj['added_at'] + '</span>'+
+                                            '</div>' +
+                                        '</header>' +
+                                        '<div class="Comment-content">' +
+                                            obj['text'] +
+                                        '</div>'+
+                                    '</div>'
+                                )
+                            } else {
+                                $('.allreviews').append(
+                                    '<div class="Comment reviews">' +
+                                    '<div class="Comment-column Comment-column_pict">' +
+                                    '<div class="Comment-avatar"></div>' +
+                                    '</div>'+
+                                    '<div class="Comment-column">' +
+                                        '<header class="Comment-header">' +
+                                            '<div>' +
+                                                '<strong class="Comment-title">' + obj['first_name'] +' ' + obj['last_name'] +'</strong>' +
+                                                '<span class="Comment-date">' + obj['added_at'] + '</span>'+
+                                            '</div>' +
+                                        '</header>' +
+                                        '<div class="Comment-content">' +
+                                            obj['text'] +
+                                        '</div>'+
+                                    '</div>'
+                                )
+                            }
+                        }
+
+                    })
+                }
+            }
+        })
+    })
+</script>
 {% endblock %}

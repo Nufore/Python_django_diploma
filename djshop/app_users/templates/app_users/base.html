@@ -122,10 +122,29 @@ p.error-browser
                     </div>
                 </nav>
                 <div class="row-block">
-                    <div class="CartBlock"><a class="CartBlock-block" href="cart.html"><img class="CartBlock-img"
-                                src="{% static 'assets/img/icons/cart.svg' %}" alt="cart.svg" /><span
-                                class="CartBlock-amount">0</span></a>
-                        <div class="CartBlock-block"><span class="CartBlock-price">0.00$</span>
+                    <div class="CartBlock">
+                        <a class="CartBlock-block" href="cart.html">
+                            <img class="CartBlock-img" src="{% static 'assets/img/icons/cart.svg' %}" alt="cart.svg"/>
+                            <span class="CartBlock-amount">
+                                {% with total_items=cart|length %}
+                                    {% if cart|length > 0 %}
+                                        {{ total_items }}
+                                    {% else %}
+                                        0
+                                    {% endif %}
+                                {% endwith %}
+                            </span>
+                        </a>
+                        <div class="CartBlock-block">
+                            <span class="CartBlock-price">
+                                {% with total_items=cart|length %}
+                                    {% if cart|length > 0 %}
+                                        {{ cart.get_total_price|floatformat:2 }}$
+                                    {% else %}
+                                        0$
+                                    {% endif %}
+                                {% endwith %}
+                            </span>
                         </div>
                     </div>
                 </div>

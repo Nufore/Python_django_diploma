@@ -71,29 +71,33 @@
 <!--                            </ul>-->
                             {{ object.description }}
                         </div>
-                        <div class="ProductCard-cart">
-                            <div class="ProductCard-cartElement ProductCard-cartElement_amount">
-                                <div class="Amount Amount_product">
-                                    <button class="Amount-remove" type="button"></button>
-                                    <input
-                                            class="Amount-input form-input"
-                                            name="amount"
-                                            type="text"
-                                            value="1"
-                                    />
-                                    <button class="Amount-add" type="button"></button>
+                        <form method="post" action="{% url 'cart:cart_add' object.id %}">
+                            {% csrf_token %}
+                            <div class="ProductCard-cart">
+                                <div class="ProductCard-cartElement ProductCard-cartElement_amount">
+                                    <div class="Amount Amount_product">
+                                        <button class="Amount-remove" type="button"></button>
+<!--                                        <input-->
+<!--                                                class="Amount-input form-input"-->
+<!--                                                name="amount"-->
+<!--                                                type="text"-->
+<!--                                                value="1"-->
+<!--                                        />-->
+                                        {{ form.quantity }}
+                                        <button class="Amount-add" type="button"></button>
+                                    </div>
+                                </div>
+                                <div class="ProductCard-cartElement">
+    <!--                                <a class="btn btn_primary" href="#">-->
+    <!--                                    <img class="btn-icon"-->
+    <!--                                         src="{% static 'assets/img/icons/card/cart_white.svg' %}"-->
+    <!--                                         alt="cart_white.svg"/>-->
+    <!--                                    <span class="btn-content">Add To Cart</span>-->
+    <!--                                </a>-->
+                                    <button class="btn btn_primary" name="btn" value="{{ object.id }}" type="submit">Add To Cart</button>
                                 </div>
                             </div>
-                            <div class="ProductCard-cartElement">
-                                <a class="btn btn_primary" href="#"
-                                ><img
-                                        class="btn-icon"
-                                        src="{% static 'assets/img/icons/card/cart_white.svg' %}"
-                                        alt="cart_white.svg"
-                                /><span class="btn-content">Add To Cart</span></a
-                                >
-                            </div>
-                        </div>
+                        </form>
                         <div class="ProductCard-footer">
                             <div class="ProductCard-tags">
                                 <strong class="ProductCard-tagsTitle">Tags: </strong>
@@ -114,15 +118,7 @@
                     <div class="Tabs-wrap">
                         <div class="Tabs-block" id="description">
                             <h2>{{ object.name }}</h2>
-                            <p>
-<!--                                Lorem ipsum dolor sit amet, consectetuer&#32;-->
-<!--                                <strong>adipiscing </strong>&#32;elit doli. Aenean commodo-->
-<!--                                ligula eget dolor. Aenean massa.&#32;<a href="#">Cumtipsu</a-->
-<!--                            >&#32;sociis natoque penatibus et magnis dis parturient-->
-<!--                                montesti, nascetur ridiculus mus. Donec quam felis,-->
-<!--                                ultricies nec, pellentesque eutu, pretiumem.-->
-                            {{ object.description }}
-                            </p>
+                            <p>{{ object.description }}</p>
                             <img
                                     class="pict pict_right"
                                     src="../../../media/{{ object.picture }}"
@@ -233,36 +229,8 @@
                                     <form class="form" action="#" method="post">
                                         {% csrf_token %}
                                         <div class="form-group">
-<!--                                            <textarea-->
-<!--                                                    class="form-textarea"-->
-<!--                                                    name="review"-->
-<!--                                                    id="review"-->
-<!--                                                    placeholder="Review"-->
-<!--                                            ></textarea>-->
                                             {{ rev_form.text }}
                                         </div>
-<!--                                        <div class="form-group">-->
-<!--                                            <div class="row">-->
-<!--                                                <div class="row-block">-->
-<!--                                                    <input-->
-<!--                                                            class="form-input"-->
-<!--                                                            id="name"-->
-<!--                                                            name="name"-->
-<!--                                                            type="text"-->
-<!--                                                            placeholder="Name"-->
-<!--                                                    />-->
-<!--                                                </div>-->
-<!--                                                <div class="row-block">-->
-<!--                                                    <input-->
-<!--                                                            class="form-input"-->
-<!--                                                            id="email"-->
-<!--                                                            name="email"-->
-<!--                                                            type="text"-->
-<!--                                                            placeholder="Email"-->
-<!--                                                    />-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
                                         <div class="form-group">
                                             <button class="btn btn_muted" type="submit">
                                                 Submit Review
@@ -346,7 +314,7 @@
             method: "GET",
             dataType: "json",
             data: data,
-            url: '{% url "load-more-reviews" %}',
+            url: '{% url "app_store:load-more-reviews" %}',
             success: function (data){
                 let result = data['data']
                 if(!result){

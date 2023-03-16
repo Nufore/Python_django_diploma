@@ -90,7 +90,9 @@ class CartView(View):
                                                                    'form': form})
         else:
             cart = Cart(request)
-            return render(request, 'app_store/cart.html', {'cart': cart})
+            form = UpdateQuantityForm()
+            return render(request, 'app_store/cart.html', {'cart': cart,
+                                                           'form': form})
 
     def post(self, request):
         if request.POST.get('btn_add'):
@@ -100,10 +102,10 @@ class CartView(View):
             product_id = request.POST.get('btn_remove')
             update_cnt = -1
         product = Product.objects.get(id=product_id)
-        cart = UserCart.objects.get(user=request.user)
-        cart_list = CartList.objects.get(cart=cart, product=product)
-        cart_list.count += update_cnt
-        cart_list.save()
+
+        cart = Cart(request)
+        cart.add(product=product, quantity=update_cnt, update_quantity=False)
+
         return redirect('/store/cart/')
 
 

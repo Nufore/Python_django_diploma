@@ -99,9 +99,19 @@
                           <div class="Cart-block Cart-block_amount">
                             <div class="Cart-amount">
                               <div class="Amount">
-                                <button class="Amount-remove" type="button"></button>
-                                <input class="Amount-input form-input" name="amount" type="text" value="{{item.quantity}}"/>
-                                <button class="Amount-add" name="btn_add" value="{{ product.id }}" type="submit" ></button>
+    <!--                            <button class="Amount-remove" type="button"></button>-->
+                                <form method="post" action="">
+                                     {% csrf_token %}
+                                    {{ form.quantity }}
+                                    <button class="Amount-remove-cart" type="submit" name="btn_remove" value="{{ item.product.id }}"></button>
+                                </form>
+                                <input class="Amount-input form-input" name="amount" type="text" value="{{ item.quantity }}"/>
+                                <form method="post" action="">
+                                     {% csrf_token %}
+                                    {{ form.quantity }}
+                                    <button class="Amount-add-cart" type="submit" name="btn_add" value="{{ item.product.id }}"></button>
+                                </form>
+    <!--                            <button class="Amount-add" name="btn_add" value="{{ item.product.id }}" type="submit"></button>-->
                               </div>
                             </div>
                         </div>

@@ -3,10 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import DetailView, ListView
 from .models import ProductCategory, Product, ProductPictures, Feedback, UserCart, CartList
-from .forms import ReviewAddForm, UpdateQuantityForm
+from .forms import ReviewAddForm, UpdateQuantityForm, OrderProfileForm, OrderDeliveryForm, OrderPaymentForm
 from django.db.models import Sum, F
 from cart.cart import Cart
 from cart.forms import CartAddProductForm
+from app_users.models import Profile
 
 
 class ProductDetailView(DetailView):
@@ -98,13 +99,15 @@ class CartView(View):
         if request.POST.get('btn_add'):
             product_id = request.POST.get('btn_add')
             update_cnt = 1
+            product = Product.objects.get(id=product_id)
+            cart = Cart(request)
+            cart.add(product=product, quantity=update_cnt, update_quantity=False)
         elif request.POST.get('btn_remove'):
             product_id = request.POST.get('btn_remove')
             update_cnt = -1
-        product = Product.objects.get(id=product_id)
-
-        cart = Cart(request)
-        cart.add(product=product, quantity=update_cnt, update_quantity=False)
+            product = Product.objects.get(id=product_id)
+            cart = Cart(request)
+            cart.add(product=product, quantity=update_cnt, update_quantity=False)
 
         return redirect('/store/cart/')
 
@@ -123,3 +126,25 @@ def product_detail(request, id):
     cart_product_form = CartAddProductForm()
     return render(request, 'app_store/product/detail.html', {'product': product,
                                                              'cart_product_form': cart_product_form})
+
+
+class OrderDeliveryView(View):
+    def get(self, request):
+        order_profile_form = OrderProfileForm(instance=Profile.objects.get(user=request.user))
+        order_delivery_form = OrderDeliveryForm()
+        order_payment_form = OrderPaymentForm()
+        cart = UserCart.objects.get(user=request.user)
+        cart_list = CartList.objects.select_related('product').filter(cart=cart)
+
+        context = {'order_profile_form': order_profile_form,
+                   'order_delivery_form': order_delivery_form,
+                   'order_payment_form': order_payment_form,
+                   'cart_list': cart_list}
+
+        return render(request, 'app_store/order.html', context=context)
+
+    def post(self, request):
+        order_delivery_form = OrderDeliveryForm(data=request.POST)
+        if order_delivery_form.is_valid():
+            del_type = order_delivery_form.cleaned_data.get('delivery_type')
+            print(del_type)

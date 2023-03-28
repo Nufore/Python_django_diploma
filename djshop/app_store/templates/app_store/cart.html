@@ -26,7 +26,7 @@
               <div class="Cart-product">
                 <div class="Cart-block Cart-block_row">
                   <div class="Cart-block Cart-block_pict">
-                    <a class="Cart-pict" href="#">
+                    <a class="Cart-pict" href="{% url 'app_store:product_detail' item.product.id %}">
                       <img class="Cart-img" src="./../../media/{{ item.product.picture }}" alt="card.jpg"/>
                     </a>
                   </div>
@@ -78,7 +78,7 @@
                   <div class="Cart-product">
                     <div class="Cart-block Cart-block_row">
                       <div class="Cart-block Cart-block_pict">
-                        <a class="Cart-pict" href="#">
+                        <a class="Cart-pict" href="{% url 'app_store:product product.id' %}">
                           <img class="Cart-img" src="./../../media/{{ product.picture }}" alt="card.jpg"/>
                         </a>
                       </div>
@@ -141,7 +141,7 @@
               </span>
             </div>
             <div class="Cart-block">
-              <a class="btn btn_success btn_lg" href="order.html">Оформить заказ</a>
+              <a class="btn btn_success btn_lg" href="{% url 'app_store:order' %}">Оформить заказ</a>
             </div>
           </div>
 <!--        </form>-->

@@ -123,7 +123,7 @@ p.error-browser
                 </nav>
                 <div class="row-block">
                     <div class="CartBlock">
-                        <a class="CartBlock-block" href="cart.html">
+                        <a class="CartBlock-block" href="{% url 'app_store:cart' %}">
                             <img class="CartBlock-img" src="{% static 'assets/img/icons/cart.svg' %}" alt="cart.svg"/>
                             <span class="CartBlock-amount">
                                 {% with total_items=cart|length %}

@@ -66,12 +66,21 @@ class UserEditView(View):
             print(form.errors)
             print(email_form.errors)
         if change_password_form.is_valid():
-            if change_password_form.cleaned_data.get('new_password1') and \
-                    change_password_form.cleaned_data.get('new_password2'):
-                change_password_form.save()
-                user = authenticate(username=request.user.username,
-                                    password=change_password_form.cleaned_data.get('new_password1'))
-                login(request, user)
+            password1 = change_password_form.cleaned_data.get('new_password1')
+            password2 = change_password_form.cleaned_data.get('new_password2')
+            if password1 and password2:
+                if password1 != password2:
+                    change_password_form.add_error('__all__', 'Введенные пароли не совпадают!')
+                else:
+                    change_password_form.save()
+                    user = authenticate(username=request.user.username,
+                                        password=change_password_form.cleaned_data.get('new_password1'))
+                    login(request, user)
         else:
+            change_password_form.add_error('__all__', 'Введенные пароли не совпадают!')
             print(change_password_form.errors)
+            return render(request, 'app_users/profile_.html', context={'form': form,
+                                                                       'change_password_form': change_password_form,
+                                                                       'email_form': email_form})
         return HttpResponseRedirect(f'/user/account')
+

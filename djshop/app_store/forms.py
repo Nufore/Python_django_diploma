@@ -30,7 +30,7 @@ ORDER_DELIVERY_TYPE_SELECT = [('Обычная доставка KEY', 'Обыч�
 
 
 class OrderDeliveryForm(forms.Form):
-    delivery_type = forms.ChoiceField(widget=forms.RadioSelect(attrs={'onchange': "set_delivery_checked()"}),
+    delivery_type = forms.ChoiceField(widget=forms.RadioSelect(),
                                       choices=ORDER_DELIVERY_TYPE_SELECT)
     city = forms.CharField(required=True)
     address = forms.CharField(required=True)
@@ -41,6 +41,34 @@ ORDER_PAYMENT_TYPE_SELECT = [('Онлайн картой KEY', 'Онлайн к�
 
 
 class OrderPaymentForm(forms.Form):
-    payment_type = forms.ChoiceField(widget=forms.RadioSelect(attrs={'onchange': "set_payment_checked()"}),
+    payment_type = forms.ChoiceField(widget=forms.RadioSelect(),
                                      choices=ORDER_PAYMENT_TYPE_SELECT)
 
+
+class AuthForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)
+
+
+class OrderRegistryForm(forms.Form):
+    fio = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-input'}))
+    phone_number = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-input'}))
+    email = forms.EmailField(required=True, widget=forms.TextInput(attrs={'class': 'form-input',
+                                                                          # 'data-validate': 'require'
+                                                                          }))
+    password1 = forms.CharField(
+        required=True,
+        label="Пароль",
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password",
+                                          "class": 'form-input',
+                                          "placeholder": "Введите пароль"}),
+        strip=False,
+    )
+    password2 = forms.CharField(
+        required=True,
+        label="Password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password",
+                                          "class": "form-input",
+                                          "placeholder": "Введите пароль повторно"})
+    )

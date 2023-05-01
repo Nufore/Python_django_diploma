@@ -26,4 +26,5 @@ urlpatterns = [
     # path('store/', include('app_store.urls')),
     path('store/', include(('app_store.urls', 'app_store'), namespace='app_store')),
     path('frontend/', include('frontend.urls')),
+    path('api/', include('payment_api.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

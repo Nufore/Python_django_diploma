@@ -30,7 +30,7 @@
                       <img class="Cart-img" src="./../../media/{{ item.product.picture }}" alt="card.jpg"/>
                     </a>
                   </div>
-                  <div class="Cart-block Cart-block_info"><a class="Cart-title" href="#">{{item.product.name}}</a>
+                  <div class="Cart-block Cart-block_info"><a class="Cart-title" href="{% url 'app_store:product_detail' item.product.id %}">{{item.product.name}}</a>
                     <div class="Cart-desc">{{item.product.description}}
                     </div>
                   </div>
@@ -78,13 +78,13 @@
                   <div class="Cart-product">
                     <div class="Cart-block Cart-block_row">
                       <div class="Cart-block Cart-block_pict">
-                        <a class="Cart-pict" href="{% url 'app_store:product product.id' %}">
+                        <a class="Cart-pict" href="{% url 'app_store:product_detail' product.id %}">
                           <img class="Cart-img" src="./../../media/{{ product.picture }}" alt="card.jpg"/>
                         </a>
                       </div>
-                      <div class="Cart-block Cart-block_info"><a class="Cart-title" href="#">{{product.name}}</a>
-                        <div class="Cart-desc">{{product.description}}
-                        </div>
+                      <div class="Cart-block Cart-block_info">
+                          <a class="Cart-title" href="{% url 'app_store:product_detail' product.id %}">{{product.name}}</a>
+                        <div class="Cart-desc">{{product.description}}</div>
                       </div>
                       <div class="Cart-block Cart-block_price">
                         <div class="Cart-price">{{product.price|floatformat:2}}$

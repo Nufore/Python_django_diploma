@@ -62,7 +62,7 @@ class CartList(models.Model):
 
 class PaymentType(models.Model):
     code = models.IntegerField()
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=40)
 
 
 class PaymentStatus(models.Model):
@@ -72,11 +72,11 @@ class PaymentStatus(models.Model):
 class Payment(models.Model):
     type = models.ForeignKey(PaymentType, on_delete=models.CASCADE)
     status = models.ForeignKey(PaymentStatus, on_delete=models.CASCADE)
-    error_message = models.CharField(max_length=255)
-    card_number = models.CharField(max_length=8)
+    error_message = models.CharField(max_length=255, default=None, null=True)
+    card_number = models.CharField(max_length=8, default=None, null=True)
 
 
-class Delivery(models.Model):
+class DeliveryType(models.Model):
     name = models.CharField(max_length=20)
     is_express = models.BooleanField(default=False)
     express_price = models.FloatField(default=500.0, null=True)
@@ -84,11 +84,18 @@ class Delivery(models.Model):
     base_price = models.FloatField(default=200, null=True)
 
 
+class Delivery(models.Model):
+    type = models.ForeignKey(DeliveryType, on_delete=models.CASCADE)
+    city = models.CharField(max_length=30)
+    address = models.CharField(max_length=100)
+
+
 class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
     total_cost = models.FloatField(default=0.0, null=False)
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    delivery_type = models.ForeignKey(Delivery, on_delete=models.CASCADE)
+    delivery = models.ForeignKey(Delivery, on_delete=models.CASCADE)
 
 
 class OrderList(models.Model):

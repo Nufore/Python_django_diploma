@@ -89,12 +89,12 @@
                 <div class="Cards">
                     {% for product in product_list %}
                     <div class="Card">
-                        <a class="Card-picture" href="{% url 'product_detail' pk=product.id %}">
+                        <a class="Card-picture" href="{% url 'app_store:product_detail' pk=product.id %}">
                             <img src="../../../media/{{ product.picture }}" alt="card.jpg"/>
                         </a>
                         <div class="Card-content">
                             <strong class="Card-title">
-                                <a href="{% url 'product_detail' pk=product.id %}">{{ product.name }}</a>
+                                <a href="{% url 'app_store:product_detail' pk=product.id %}">{{ product.name }}</a>
                             </strong>
                             <div class="Card-description">
                                 <div class="Card-cost">

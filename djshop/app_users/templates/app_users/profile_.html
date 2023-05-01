@@ -355,6 +355,7 @@ p.error-browser
                                     <label class="form-label" for="{{ form.email.id_for_label }}">E-mail</label>
                                     {{ email_form.email }}
                                 </div>
+                                {{ change_password_form.non_field_errors }}
                                 <div class="form-group">
                                     <label class="form-label" for="{{ change_password_form.new_password1.id_for_label }}">Пароль
                                     </label>

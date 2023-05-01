@@ -1,13 +1,19 @@
-from django.http import HttpResponseRedirect, JsonResponse
+from decimal import Decimal
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import DetailView, ListView
-from .models import ProductCategory, Product, ProductPictures, Feedback, UserCart, CartList
+from .models import ProductCategory, Product, ProductPictures, Feedback, UserCart, CartList, Delivery, Order,\
+    OrderList, Payment, PaymentType, PaymentStatus, DeliveryType
 from .forms import ReviewAddForm, UpdateQuantityForm, OrderProfileForm, OrderDeliveryForm, OrderPaymentForm
 from django.db.models import Sum, F
 from cart.cart import Cart
 from cart.forms import CartAddProductForm
 from app_users.models import Profile
+from .forms import AuthForm, OrderRegistryForm
 
 
 class ProductDetailView(DetailView):
@@ -72,7 +78,7 @@ class ProductListView(ListView):
     model = Product
     template_name = 'app_store/catalog.html'
     context_object_name = 'product_list'
-    paginate_by = 2
+    paginate_by = 4
 
 
 def base(request):
@@ -130,21 +136,145 @@ def product_detail(request, id):
 
 class OrderDeliveryView(View):
     def get(self, request):
-        order_profile_form = OrderProfileForm(instance=Profile.objects.get(user=request.user))
+        if request.user.is_authenticated:
+            order_profile_form = OrderProfileForm(instance=Profile.objects.get(user=request.user))
+            cart = UserCart.objects.get(user=request.user)
+            cart_list = CartList.objects.select_related('product').filter(cart=cart)
+        else:
+            order_profile_form = OrderProfileForm()
+            cart_list = Cart(request)
+        order_registry_form = OrderRegistryForm()
+        login_form = AuthForm()
         order_delivery_form = OrderDeliveryForm()
         order_payment_form = OrderPaymentForm()
-        cart = UserCart.objects.get(user=request.user)
-        cart_list = CartList.objects.select_related('product').filter(cart=cart)
+
+        base_delivery = DeliveryType.objects.get(is_express=False)
+        express_delivery = DeliveryType.objects.get(is_express=True)
 
         context = {'order_profile_form': order_profile_form,
+                   'order_registry_form': order_registry_form,
                    'order_delivery_form': order_delivery_form,
                    'order_payment_form': order_payment_form,
-                   'cart_list': cart_list}
+                   'login_form': login_form,
+                   'cart_list': cart_list,
+                   'base_delivery': base_delivery,
+                   'express_delivery': express_delivery}
 
         return render(request, 'app_store/order.html', context=context)
 
     def post(self, request):
+
+        if request.POST.get('btn_login'):
+            login_form = AuthForm(request.POST)
+            if login_form.is_valid():
+                username = login_form.cleaned_data['username']
+                password = login_form.cleaned_data['password']
+                user = authenticate(username=username, password=password)
+                if user:
+                    if user.is_active:
+                        login(request, user)
+                        return redirect('/store/order')
+                    else:
+                        login_form.add_error('__all__', 'Ошибка! Учетная запись пользователя не активна.')
+                else:
+                    login_form.add_error('__all__', 'Ошибка! Проверьте правильность ввода логина и пароля.')
+            return render(request, 'app_store/order.html', {'login_form': login_form,
+                                                            'order_registry_form': OrderRegistryForm()})
+
+        if request.POST.get('btn_register'):
+            order_registry_form = OrderRegistryForm(request.POST)
+            login_form = AuthForm(request.POST)
+            if order_registry_form.is_valid():
+                fio = order_registry_form.cleaned_data.get('fio')
+                phone_number = order_registry_form.cleaned_data.get('phone_number')
+                email = order_registry_form.cleaned_data.get('email')
+                password1 = order_registry_form.cleaned_data.get('password1')
+                password2 = order_registry_form.cleaned_data.get('password2')
+                if User.objects.get(email=email):
+                    login_form.add_error('__all__', 'Пользователь с указанным email существует, вы можете авторизоваться')
+                    return render(request, 'app_store/order.html', {'login_form': login_form,
+                                                                    'order_registry_form': order_registry_form})
+
+                if password1 != password2:
+                    order_registry_form.add_error('__all__', ['Ошибка!', 'Введенные пароли не совпадают!'])
+                else:
+                    anon_cart = Cart(request)
+                    user = User.objects.create_user(username=email, email=email, password=password1)
+                    cart = UserCart.objects.create(user=user)
+                    for item in anon_cart:
+                        CartList.objects.create(cart=cart,
+                                                product=Product.objects.get(id=int(item['product'].id)),
+                                                count=int(item['quantity']))
+                    Profile.objects.create(
+                        user=user,
+                        fio=fio,
+                        phone_number=phone_number
+                    )
+                    anon_cart.clear()
+                    user = authenticate(username=email, password=password1)
+                    login(request, user)
+                    return redirect('/store/order')
+                return render(request, 'app_store/order.html', {'order_registry_form': order_registry_form,
+                                                                'login_form': login_form})
+
         order_delivery_form = OrderDeliveryForm(data=request.POST)
         if order_delivery_form.is_valid():
+            city = order_delivery_form.cleaned_data.get('city')
+            address = order_delivery_form.cleaned_data.get('address')
             del_type = order_delivery_form.cleaned_data.get('delivery_type')
-            print(del_type)
+            if del_type == 'Экспресс доставка KEY':
+                delivery_type = DeliveryType.objects.get(is_express=True)
+            elif del_type == 'Обычная доставка KEY':
+                delivery_type = DeliveryType.objects.get(is_express=False)
+            delivery = Delivery.objects.create(type=delivery_type, city=city, address=address)
+
+        order_payment_form = OrderPaymentForm(data=request.POST)
+        if order_payment_form.is_valid():
+            pay_type = order_payment_form.cleaned_data.get('payment_type')
+            if pay_type == 'Онлайн картой KEY':
+                payment = Payment.objects.create(type=PaymentType.objects.get(id=1),
+                                                 status=PaymentStatus.objects.get(id=2))
+            elif pay_type == 'Онлайн со случайного чужого счета KEY':
+                payment = Payment.objects.create(type=PaymentType.objects.get(id=2),
+                                                 status=PaymentStatus.objects.get(id=2))
+
+        cart = UserCart.objects.get(user=request.user)
+        cart_list = CartList.objects.select_related('product').filter(cart=cart)
+        cart_summ = CartList.objects.filter(cart=cart).aggregate(total=Sum(F('product__price') * F('count')))
+
+        if delivery_type.is_express:
+            total_cost = float(cart_summ['total']) + delivery_type.express_price
+        else:
+            if float(cart_summ['total']) >= delivery_type.base_less_than:
+                total_cost = float(cart_summ['total'])
+            else:
+                total_cost = float(cart_summ['total']) + delivery_type.base_price
+
+        new_order = Order.objects.create(user=request.user, total_cost=total_cost, delivery=delivery,
+                                         payment=payment)
+        for item in cart_list:
+            OrderList.objects.create(order=new_order, product=item.product, count=item.count)
+
+        cart.delete()
+
+        return redirect(f'/store/order-detail/{new_order.id}')
+
+
+class OrderDetailView(DetailView):
+    model = Order
+    template_name = 'app_store/oneorder.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['order_list'] = OrderList.objects.filter(order=self.object)
+        return context
+
+
+class PaymentView(View):
+    def get(self, request, pk):
+        order = Order.objects.get(id=pk)
+        return render(request, 'app_store/payment.html', {'order': order})
+
+
+def progress_payment(request):
+    return render(request, 'app_store/progressPayment.html')

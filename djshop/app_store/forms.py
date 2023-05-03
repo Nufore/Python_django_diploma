@@ -72,3 +72,13 @@ class OrderRegistryForm(forms.Form):
                                           "class": "form-input",
                                           "placeholder": "Введите пароль повторно"})
     )
+
+
+class AccountForm(forms.Form):
+    account = forms.CharField(required=True, widget=forms.TextInput(attrs={"class": "form-input Payment-bill",
+                                                                           "id": "numero1",
+                                                                           "name": "numero1",
+                                                                           "type": "text",
+                                                                           "placeholder": "9999 9999",
+                                                                           "data-mask": "9999 9999",
+                                                                           "data-validate": "require pay"}))

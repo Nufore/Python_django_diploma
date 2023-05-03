@@ -13,7 +13,8 @@ from django.db.models import Sum, F
 from cart.cart import Cart
 from cart.forms import CartAddProductForm
 from app_users.models import Profile
-from .forms import AuthForm, OrderRegistryForm
+from payment_api.models import PaymentTransactions
+from .forms import AuthForm, OrderRegistryForm, AccountForm
 
 
 class ProductDetailView(DetailView):
@@ -273,7 +274,18 @@ class OrderDetailView(DetailView):
 class PaymentView(View):
     def get(self, request, pk):
         order = Order.objects.get(id=pk)
-        return render(request, 'app_store/payment.html', {'order': order})
+        account_form = AccountForm()
+        return render(request, 'app_store/payment.html', {'order': order,
+                                                          'account_form': account_form})
+
+    def post(self, request, pk):
+        account_form = AccountForm(request.POST)
+        if account_form.is_valid():
+            order = Order.objects.get(id=pk)
+            account = int(account_form.cleaned_data.get('account').replace(' ', ''))
+            payment = PaymentTransactions.objects.create(order_id=pk, account=account, summ=order.total_cost)
+            payment.save()
+            return redirect('/store/progress-payment')
 
 
 def progress_payment(request):

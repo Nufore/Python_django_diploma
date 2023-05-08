@@ -1,8 +1,8 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from .jobs import payment_attempt_f
+from .jobs import payment_attempt
 
 
-def start():
+def start_scheduler():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(payment_attempt_f, 'interval', seconds=10)
+    scheduler.add_job(payment_attempt, 'interval', seconds=30)
     scheduler.start()

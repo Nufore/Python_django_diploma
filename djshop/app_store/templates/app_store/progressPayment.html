@@ -33,5 +33,32 @@
         </div>
       </div>
     </div>
-  </div>
+{% endblock %}
+{% block addition %}
+<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+<script>
+
+function getInfo() {
+  return new Promise(() => {
+    $.ajax({
+        method: "GET",
+        dataType: "json",
+        url: '{% url "app_store:get-payment-response" pk %}',
+        success: function(data) {
+            let result = data['data']
+            if(result) {
+                let url_redirect = '{% url "app_store:order-detail" pk %}';
+                location.href = url_redirect;
+            }
+        },
+        error: function() {
+          console.log('error')
+        }
+    });
+  });
+}
+
+setInterval(getInfo, 2000);
+
+</script>
 {% endblock %}

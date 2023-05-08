@@ -285,147 +285,15 @@
                     <label class="form-label" for="{{ order_registry_form.password2.id_for_label }}">Подтверждение пароля</label>
                     {{ order_registry_form.password2 }}
                   </div>
-                  <div class="form-group"><a class="btn btn_muted Order-btnReg" href="#" id="open_pop_up">Я уже зарегистрирован</a></div>
+                  <div class="form-group">
+                      <a class="btn btn_muted Order-btnReg" id="open_pop_up">Я уже зарегистрирован</a>
+                  </div>
                 </div>
               </div>
               <div class="Order-footer">
-<!--                  <a class="btn btn_success Order-next" onclick="get_user_parameters()" href="#step2">Дальше</a>-->
                   <button class="btn btn_success" type="submit" name="btn_register" value="1">Дальше</button>
               </div>
             </div>
-<!--            <div class="Order-block" id="step2">-->
-<!--              <header class="Section-header Section-header_sm">-->
-<!--                <h2 class="Section-title">Шаг 2. Способ доставки-->
-<!--                </h2>-->
-<!--              </header>-->
-<!--              <div class="form-group">-->
-<!--                  {% for del_type in order_delivery_form.delivery_type %}-->
-<!--                    <div>-->
-<!--                      <label class="toggle" for="{{ del_type.id_for_label }}">-->
-<!--                          {{ del_type.tag }}-->
-<!--                          <span class="toggle-box"></span>-->
-<!--                          <span class="toggle-text">{{ del_type.choice_label }}</span>-->
-<!--                      </label>-->
-<!--                    </div>-->
-<!--                  {% endfor %}-->
-<!--              </div>-->
-<!--              <div class="form-group">-->
-<!--                <label class="form-label" for="city">Город</label>-->
-<!--                <input class="form-input" id="city" name="city" type="text" data-validate="require"/>-->
-<!--              </div>-->
-<!--              <div class="form-group">-->
-<!--                <label class="form-label" for="address">Адрес</label>-->
-<!--                <textarea class="form-textarea" name="address" id="address" data-validate="require"></textarea>-->
-<!--              </div>-->
-<!--              <div class="Order-footer">-->
-<!--                  <a class="btn btn_success Order-next" onclick="get_delivery_parameters()" href="#step3">Дальше</a>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="Order-block" id="step3">-->
-<!--              <header class="Section-header Section-header_sm">-->
-<!--                <h2 class="Section-title">Шаг 3. Способ оплаты-->
-<!--                </h2>-->
-<!--              </header>-->
-<!--              <div class="form-group">-->
-<!--                {% for pay_type in order_payment_form.payment_type %}-->
-<!--                    <div>-->
-<!--                      <label class="toggle" for="{{ pay_type.id_for_label }}">-->
-<!--                          {{ pay_type.tag }}-->
-<!--                          <span class="toggle-box"></span>-->
-<!--                          <span class="toggle-text">{{ pay_type.choice_label }}</span>-->
-<!--                      </label>-->
-<!--                    </div>-->
-<!--                  {% endfor %}-->
-<!--              </div>-->
-<!--              <div class="Order-footer"><a class="btn btn_success Order-next" onclick="get_payment_parameters()" href="#step4">Дальше</a>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--            <div class="Order-block" id="step4">-->
-<!--              <header class="Section-header Section-header_sm">-->
-<!--                <h2 class="Section-title">Шаг 4. Подтверждение заказа-->
-<!--                </h2>-->
-<!--              </header>-->
-<!--              &lt;!&ndash;+div.Order.-confirmation&ndash;&gt;-->
-<!--              <div class="Order-infoBlock">-->
-<!--                <div class="Order-personal">-->
-<!--                  <div class="row">-->
-<!--                    <div class="row-block">-->
-<!--                      <div class="Order-info">-->
-<!--                        <div class="Order-infoType">ФИО:</div>-->
-<!--                        <div class="Order-infoContent" id="infoname"></div>-->
-<!--                      </div>-->
-<!--                      <div class="Order-info">-->
-<!--                        <div class="Order-infoType">Телефон:</div>-->
-<!--                        <div class="Order-infoContent" id="infophone"></div>-->
-<!--                      </div>-->
-<!--                      <div class="Order-info">-->
-<!--                        <div class="Order-infoType">E-mail:</div>-->
-<!--                        <div class="Order-infoContent" id="infoemail"></div>-->
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                    <div class="row-block">-->
-<!--                      <div class="Order-info Order-info_delivery">-->
-<!--                        <div class="Order-infoType">Тип доставки:</div>-->
-<!--                        <div class="Order-infoContent" id="infodeliverytype"></div>-->
-<!--                      </div>-->
-<!--                      <div class="Order-info">-->
-<!--                        <div class="Order-infoType">Город:</div>-->
-<!--                        <div class="Order-infoContent" id="infocity"></div>-->
-<!--                      </div>-->
-<!--                      <div class="Order-info">-->
-<!--                        <div class="Order-infoType">Адрес:</div>-->
-<!--                        <div class="Order-infoContent" id="infoaddress"></div>-->
-<!--                      </div>-->
-<!--                      <div class="Order-info Order-info_pay">-->
-<!--                        <div class="Order-infoType">Оплата:</div>-->
-<!--                        <div class="Order-infoContent" id="infopaymenttype"></div>-->
-<!--                      </div>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--                <div class="Cart Cart_order">-->
-<!--                  {% for item in cart_list %}-->
-<!--                    {% with product=item.product %}-->
-<!--                        <div class="Cart-product">-->
-<!--                          <div class="Cart-block Cart-block_row">-->
-<!--                            <div class="Cart-block Cart-block_pict">-->
-<!--                              <a class="Cart-pict" href="{% url 'app_store:product_detail' product.id %}">-->
-<!--                                <img class="Cart-img" src="./../../media/{{ product.picture }}" alt="card.jpg"/>-->
-<!--                              </a>-->
-<!--                            </div>-->
-<!--                            <div class="Cart-block Cart-block_info"><a class="Cart-title" href="{% url 'app_store:product_detail' product.id %}">{{product.name}}</a>-->
-<!--                              <div class="Cart-desc">{{product.description}}</div>-->
-<!--                            </div>-->
-<!--                            <div class="Cart-block Cart-block_price">-->
-<!--                              <div class="Cart-price">{{product.price|floatformat:2}}$</div>-->
-<!--                            </div>-->
-<!--                          </div>-->
-<!--                          <div class="Cart-block Cart-block_row">-->
-<!--                            <div class="Cart-block Cart-block_amount">{{item.count}} шт.</div>-->
-<!--                          </div>-->
-<!--                        </div>-->
-<!--                    {% endwith %}-->
-<!--                  {% endfor %}-->
-<!--                  <div class="Cart-total">-->
-<!--                    <div class="Cart-block Cart-block_total">-->
-<!--                      <strong class="Cart-title">Итого:</strong>-->
-<!--                      <span class="Cart-price">-->
-<!--                        {% with total_items=cart|length %}-->
-<!--                            {% if cart|length > 0 %}-->
-<!--                                {{ cart.get_total_price|floatformat:2 }}$-->
-<!--                            {% else %}-->
-<!--                                0$-->
-<!--                            {% endif %}-->
-<!--                        {% endwith %}-->
-<!--                      </span>-->
-<!--                    </div>-->
-<!--                    <div class="Cart-block">-->
-<!--                      <button class="btn btn_primary btn_lg" type="submit">Оплатить</button>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
           </form>
           <div class="pop_up" id="pop_up">
             <div class="pop_up_container">
@@ -456,7 +324,9 @@
         <div class="express_delivery_price">{{ express_delivery.express_price }}</div>
     </div>
     </div>
-<script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+{% endblock %}
+{% block addition %}
+<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
 <script>
     function get_user_parameters() {
         var input_name = document.getElementById('name').value;
@@ -508,7 +378,7 @@
             payment_type_0.checked = true;
         }
     }
-    
+
     function get_payment_parameters() {
         var payment_type_0 = document.getElementById('id_payment_type_0');
         var payment_type_1 = document.getElementById('id_payment_type_1');
@@ -524,8 +394,13 @@
     const PopUp = document.getElementById('pop_up');
 
     var error_login = document.getElementsByClassName('errorlist nonfield');
-    if (error_login[0].childElementCount == 1) {
-        PopUp.classList.add('active');
+    if (error_login !== null) {
+        if (error_login[0]) {
+            var cec = error_login[0]['childElementCount'];
+            if (cec == 1) {
+                PopUp.classList.add('active');
+            }
+        }
     }
 
     openPopUp.addEventListener('click', function(e){
@@ -536,6 +411,9 @@
     closePopUp.addEventListener('click', () => {
         PopUp.classList.remove('active');
     })
+
+
+
 
 </script>
 {% endblock %}

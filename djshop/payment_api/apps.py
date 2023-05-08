@@ -7,4 +7,4 @@ class PaymentApiConfig(AppConfig):
 
     def ready(self):
         from .jobs import updater
-        updater.start()
+        updater.start_scheduler()

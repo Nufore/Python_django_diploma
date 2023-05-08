@@ -5,25 +5,26 @@ import requests
 import json
 
 
-def payment_attempt_f():
+def payment_attempt():
     transaction = PaymentTransactions.objects.filter(satisfied=False).order_by('id').first()
     if transaction is not None:
-        print(transaction.account, transaction.order_id)
         response = requests.request('GET', 'http://127.0.0.1:8000/api/payment', params={'number': transaction.account})
+        order = Order.objects.get(id=transaction.order_id)
         if response.json().get('success'):
-            order = Order.objects.get(id=transaction.order_id)
-            print('ORDER', order.payment.status)
             status = PaymentStatus.objects.get(id=1)
-            print('STATUS', status)
             order.payment.status = status
-            print('ORDER AFTER', order.payment.status)
+            order.payment.card_number = transaction.account
+            order.payment.error_message = None
             order.payment.save()
             transaction.satisfied = True
             transaction.save()
-            print('Транзакция оплачена')
-            return
-        print('Транзакция не оплачена')
-    print('Транзакций на оплату не найдено')
+            print(f'Транзакция {transaction.id} оплачена')
+        else:
+            order.payment.error_message = f'Номер нечетный или заказчивается на 0. {response.json().get("message")}'
+            order.payment.save()
+            print(f'Транзакция {transaction.id} не оплачена')
+    else:
+        print('Транзакций на оплату не найдено')
 
 
 

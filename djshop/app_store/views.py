@@ -136,6 +136,9 @@ def product_detail(request, id):
 
 
 class OrderDeliveryView(View):
+    base_delivery = DeliveryType.objects.get(is_express=False)
+    express_delivery = DeliveryType.objects.get(is_express=True)
+
     def get(self, request):
         if request.user.is_authenticated:
             order_profile_form = OrderProfileForm(instance=Profile.objects.get(user=request.user))
@@ -149,17 +152,14 @@ class OrderDeliveryView(View):
         order_delivery_form = OrderDeliveryForm()
         order_payment_form = OrderPaymentForm()
 
-        base_delivery = DeliveryType.objects.get(is_express=False)
-        express_delivery = DeliveryType.objects.get(is_express=True)
-
         context = {'order_profile_form': order_profile_form,
                    'order_registry_form': order_registry_form,
                    'order_delivery_form': order_delivery_form,
                    'order_payment_form': order_payment_form,
                    'login_form': login_form,
                    'cart_list': cart_list,
-                   'base_delivery': base_delivery,
-                   'express_delivery': express_delivery}
+                   'base_delivery': self.base_delivery,
+                   'express_delivery': self.express_delivery}
 
         return render(request, 'app_store/order.html', context=context)
 
@@ -180,7 +180,9 @@ class OrderDeliveryView(View):
                 else:
                     login_form.add_error('__all__', 'Ошибка! Проверьте правильность ввода логина и пароля.')
             return render(request, 'app_store/order.html', {'login_form': login_form,
-                                                            'order_registry_form': OrderRegistryForm()})
+                                                            'order_registry_form': OrderRegistryForm(),
+                                                            'base_delivery': self.base_delivery,
+                                                            'express_delivery': self.express_delivery})
 
         if request.POST.get('btn_register'):
             order_registry_form = OrderRegistryForm(request.POST)
@@ -191,10 +193,13 @@ class OrderDeliveryView(View):
                 email = order_registry_form.cleaned_data.get('email')
                 password1 = order_registry_form.cleaned_data.get('password1')
                 password2 = order_registry_form.cleaned_data.get('password2')
-                if User.objects.get(email=email):
+
+                if User.objects.filter(email=email).exists():
                     login_form.add_error('__all__', 'Пользователь с указанным email существует, вы можете авторизоваться')
                     return render(request, 'app_store/order.html', {'login_form': login_form,
-                                                                    'order_registry_form': order_registry_form})
+                                                                    'order_registry_form': order_registry_form,
+                                                                    'base_delivery': self.base_delivery,
+                                                                    'express_delivery': self.express_delivery})
 
                 if password1 != password2:
                     order_registry_form.add_error('__all__', ['Ошибка!', 'Введенные пароли не совпадают!'])
@@ -216,7 +221,9 @@ class OrderDeliveryView(View):
                     login(request, user)
                     return redirect('/store/order')
                 return render(request, 'app_store/order.html', {'order_registry_form': order_registry_form,
-                                                                'login_form': login_form})
+                                                                'login_form': login_form,
+                                                                'base_delivery': self.base_delivery,
+                                                                'express_delivery': self.express_delivery})
 
         order_delivery_form = OrderDeliveryForm(data=request.POST)
         if order_delivery_form.is_valid():
@@ -283,10 +290,37 @@ class PaymentView(View):
         if account_form.is_valid():
             order = Order.objects.get(id=pk)
             account = int(account_form.cleaned_data.get('account').replace(' ', ''))
-            payment = PaymentTransactions.objects.create(order_id=pk, account=account, summ=order.total_cost)
+            payment, created = PaymentTransactions.objects.get_or_create(order_id=pk)
+            payment.account = account
+            if created:
+                payment.summ = order.total_cost
             payment.save()
-            return redirect('/store/progress-payment')
+            return redirect(f'/store/progress-payment/{pk}')
 
 
-def progress_payment(request):
-    return render(request, 'app_store/progressPayment.html')
+def progress_payment(request, pk):
+    return render(request, 'app_store/progressPayment.html', {'pk': pk})
+
+
+class OrderListView(ListView):
+    model = Order
+    template_name = 'app_store/historyorder.html'
+    context_object_name = 'order_list'
+    ordering = '-id'
+
+
+class HistoryOrderView(View):
+
+    def get(self, request):
+        order_list = Order.objects.filter(user=request.user).order_by('-id')
+        return render(request, 'app_store/historyorder.html', {'order_list': order_list})
+
+
+class GetPaymentResponse(View):
+
+    def get(self, request, pk):
+        order = Order.objects.get(id=pk)
+        if order.payment.status.id == 1:
+            return JsonResponse({'data': True})
+        else:
+            return JsonResponse({'data': False})

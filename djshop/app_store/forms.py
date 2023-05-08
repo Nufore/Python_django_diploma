@@ -51,11 +51,12 @@ class AuthForm(forms.Form):
 
 
 class OrderRegistryForm(forms.Form):
-    fio = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-input'}))
-    phone_number = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-input'}))
+    fio = forms.CharField(required=True, widget=forms.TextInput(attrs={'class': 'form-input',
+                                                                       'placeholder': 'Введите ФИО'}))
+    phone_number = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-input',
+                                                                                 'placeholder': 'Введите номер телефона'}))
     email = forms.EmailField(required=True, widget=forms.TextInput(attrs={'class': 'form-input',
-                                                                          # 'data-validate': 'require'
-                                                                          }))
+                                                                          'placeholder': 'Введите e-mail'}))
     password1 = forms.CharField(
         required=True,
         label="Пароль",

@@ -27,17 +27,17 @@
                         <div class="Section-columnContent">
                             <div class="NavigateProfile">
                                 <ul class="menu menu_vt">
-                                    <li class="menu-item_ACTIVE menu-item"><a class="menu-link"
-                                                                              href="account.html">Личный
-                                        кабинет</a>
+                                    <li class="menu-item_ACTIVE menu-item">
+                                        <a class="menu-link" href="{% url 'account' %}">Личный кабинет</a>
                                     </li>
-                                    <li class="menu-item"><a class="menu-link" href="{% url 'profile' %}">Профиль</a>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="{% url 'profile' %}">Профиль</a>
                                     </li>
-                                    <li class="menu-item"><a class="menu-link" href="historyorder.html">История
-                                        заказов</a>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="{% url 'app_store:history-order' %}">История заказов</a>
                                     </li>
-                                    <li class="menu-item"><a class="menu-link" href="historyview.html">История
-                                        просмотра</a>
+                                    <li class="menu-item">
+                                        <a class="menu-link" href="historyview.html">История просмотра</a>
                                     </li>
                                 </ul>
                             </div>
@@ -62,38 +62,33 @@
                                 <div class="Order Order_anons">
                                     <div class="Order-personal">
                                         <div class="row">
-                                            <div class="row-block"><a class="Order-title"
-                                                                      href="oneorder.html">Заказ&#32;<span
-                                                    class="Order-numberOrder">№200</span>&#32;от&#32;<span
-                                                    class="Order-dateOrder">21.07.2020</span></a>
-                                                <div class="Account-editLink"><a href="historyorder.html">История
-                                                    заказов</a>
+                                            <div class="row-block">
+                                                <a class="Order-title" href="{% url 'app_store:order-detail' order.id %}">
+                                                    Заказ&#32;
+                                                    <span class="Order-numberOrder">№{{ order.id }}</span>
+                                                    &#32;от&#32;
+                                                    <span class="Order-dateOrder">{{ order.order_date|date:'d-m-Y' }}</span>
+                                                </a>
+                                                <div class="Account-editLink">
+                                                    <a href="{% url 'app_store:history-order' %}">История заказов</a>
                                                 </div>
                                             </div>
                                             <div class="row-block">
                                                 <div class="Order-info Order-info_delivery">
-                                                    <div class="Order-infoType">Тип доставки:
-                                                    </div>
-                                                    <div class="Order-infoContent">Обычная доставка
-                                                    </div>
+                                                    <div class="Order-infoType">Тип доставки:</div>
+                                                    <div class="Order-infoContent">{{ order.delivery.type.name }}</div>
                                                 </div>
                                                 <div class="Order-info Order-info_pay">
-                                                    <div class="Order-infoType">Оплата:
-                                                    </div>
-                                                    <div class="Order-infoContent">Онлайн картой
-                                                    </div>
+                                                    <div class="Order-infoType">Оплата:</div>
+                                                    <div class="Order-infoContent">{{ order.payment.type.name }}</div>
                                                 </div>
                                                 <div class="Order-info">
-                                                    <div class="Order-infoType">Общая стоимость:
-                                                    </div>
-                                                    <div class="Order-infoContent">200.99$
-                                                    </div>
+                                                    <div class="Order-infoType">Общая стоимость:</div>
+                                                    <div class="Order-infoContent">{{ order.total_cost }}$</div>
                                                 </div>
                                                 <div class="Order-info Order-info_status">
-                                                    <div class="Order-infoType">Статус:
-                                                    </div>
-                                                    <div class="Order-infoContent">Не оплачен
-                                                    </div>
+                                                    <div class="Order-infoType">Статус:</div>
+                                                    <div class="Order-infoContent">{{ order.payment.status.name }}</div>
                                                 </div>
                                             </div>
                                         </div>

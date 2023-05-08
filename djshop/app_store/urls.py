@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import ProductDetailView, ProductListView, base, DynamicReviewLoad, CartView, product_list,\
-    product_detail, OrderDeliveryView, OrderDetailView, PaymentView, progress_payment
+    product_detail, OrderDeliveryView, OrderDetailView, PaymentView, progress_payment, OrderListView, \
+    GetPaymentResponse, HistoryOrderView
 
 
 urlpatterns = [
@@ -13,7 +14,9 @@ urlpatterns = [
     path('order/', OrderDeliveryView.as_view(), name='order'),
     path('order-detail/<int:pk>', OrderDetailView.as_view(), name='order-detail'),
     path('payment/<int:pk>', PaymentView.as_view(), name='payment'),
-    path('progress-payment', progress_payment, name='progress-payment'),
+    path('progress-payment/<int:pk>', progress_payment, name='progress-payment'),
+    path('get-payment-response/<int:pk>', GetPaymentResponse.as_view(), name='get-payment-response'),
+    path('history-order/', HistoryOrderView.as_view(), name='history-order'),
 
     path('new_product_list', product_list, name='new_product_list'),
     path('new_product_detail/<int:id>', product_detail, name='new_product_detail'),

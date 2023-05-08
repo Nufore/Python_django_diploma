@@ -11,7 +11,7 @@
           <ul class="breadcrumbs Middle-breadcrumbs">
             <li class="breadcrumbs-item"><a href="index.html">home</a>
             </li>
-            <li class="breadcrumbs-item"><a href="historyorder.html">История заказов</a>
+            <li class="breadcrumbs-item"><a href="{% url 'app_store:history-order' %}">История заказов</a>
             </li>
             <li class="breadcrumbs-item breadcrumbs-item_current"><span>Заказ №{{object.id}}</span>
             </li>
@@ -67,10 +67,12 @@
                       <div class="Order-infoType">Статус:</div>
                       <div class="Order-infoContent">{{object.payment.status.name}}</div>
                     </div>
+                    {% if object.payment.error_message %}
                     <div v-if="paymentError !== null" class="Order-info Order-info_error">
                       <div class="Order-infoType">Оплата не прошла:</div>
                       <div class="Order-infoContent">{{object.payment.error_message}}</div>
                     </div>
+                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -101,8 +103,11 @@
                     <strong class="Cart-title">Итого:<span class="Cart-price">{{object.total_cost|floatformat:2}}$</span>
                     </strong>
                   </div>
-                  <div class="Cart-block"><a class="btn btn_primary btn_lg" href="{% url 'app_store:payment' object.id %}">Оплатить</a>
+                  {% if object.payment.status.id == 2 %}
+                  <div class="Cart-block">
+                    <a class="btn btn_primary btn_lg" href="{% url 'app_store:payment' object.id %}">Оплатить</a>
                   </div>
+                  {% endif %}
                 </div>
               </div>
             </div>

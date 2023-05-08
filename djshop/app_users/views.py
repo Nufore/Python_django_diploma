@@ -6,6 +6,7 @@ from django.views import View
 
 from .forms import RegisterForm, UserEditForm, UserEditEmailForm, UserChangePasswordForm
 from .models import Profile
+from app_store.models import Order
 
 
 def register_view(request):
@@ -32,7 +33,8 @@ def register_view(request):
 
 class Account(View):
     def get(self, request):
-        return render(request, 'app_users/account.html')
+        order = Order.objects.filter(user=request.user).last()
+        return render(request, 'app_users/account.html', {'order': order})
 
 
 class UserLoginView(LoginView):

@@ -83,7 +83,14 @@ class ProductListView(ListView):
 
 
 def base(request):
-    return render(request, 'app_store/base.html')
+    categories = ProductCategory.objects.order_by('id')[:3]
+    product_categories_parameters = []
+    for item in categories:
+        product = Product.objects.filter(category=item).order_by('price').first()
+        product_categories_parameters.append({"category": item.name,
+                                              "price_from": product.price,
+                                              "picture": product.picture})
+    return render(request, 'app_store/base.html', {'product_categories_parameters': product_categories_parameters})
 
 
 class CartView(View):

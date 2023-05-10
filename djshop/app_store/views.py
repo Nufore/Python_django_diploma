@@ -83,6 +83,7 @@ class ProductListView(ListView):
 
 
 def base(request):
+    # три избранные категории товаров
     categories = ProductCategory.objects.order_by('id')[:3]
     product_categories_parameters = []
     for item in categories:
@@ -90,7 +91,15 @@ def base(request):
         product_categories_parameters.append({"category": item.name,
                                               "price_from": product.price,
                                               "picture": product.picture})
-    return render(request, 'app_store/base.html', {'product_categories_parameters': product_categories_parameters})
+
+    # каталог топ-товаров (popular product)(hot offers)
+    popular_products = sorted(OrderList.objects.values('product').annotate(Sum('count'))[:8],
+                              key=lambda x: x['count__sum'],
+                              reverse=True)
+    products = [Product.objects.get(id=product['product']) for product in popular_products]
+
+    return render(request, 'app_store/base.html', {'product_categories_parameters': product_categories_parameters,
+                                                   'products': products})
 
 
 class CartView(View):

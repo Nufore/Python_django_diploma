@@ -24,6 +24,7 @@ class Product(models.Model):
     feedback_count = models.IntegerField(default=0, null=False)
     added_at = models.DateTimeField(auto_now_add=True)
     manufacturer = models.CharField(max_length=200)
+    limited_edition = models.BooleanField(default=False, null=True)
 
     class Meta:
         ordering = ('name',)

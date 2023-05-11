@@ -98,8 +98,12 @@ def base(request):
                               reverse=True)
     products = [Product.objects.get(id=product['product']) for product in popular_products]
 
+    # слайдер с ограниченным тиражом (Limited edition)
+    limited_edition_products = Product.objects.filter(limited_edition=True).order_by('id')[:16]
+
     return render(request, 'app_store/base.html', {'product_categories_parameters': product_categories_parameters,
-                                                   'products': products})
+                                                   'products': products,
+                                                   'limited_edition_products': limited_edition_products})
 
 
 class CartView(View):

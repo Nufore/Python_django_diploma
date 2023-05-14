@@ -1,12 +1,13 @@
 from django.urls import path
 from .views import ProductDetailView, ProductListView, base, DynamicReviewLoad, CartView, product_list,\
     product_detail, OrderDeliveryView, OrderDetailView, PaymentView, progress_payment, OrderListView, \
-    GetPaymentResponse, HistoryOrderView
+    GetPaymentResponse, HistoryOrderView, base_add_product
 
 
 urlpatterns = [
     path('base/', base, name='base'),
-    path('product/', ProductListView.as_view(), name='product_list'),
+    path('add/<int:product_id>/<str:url_redirect>/', base_add_product, name='add_product'),
+    path('products/', ProductListView.as_view(), name='product_list'),
     path('catalog/', ProductListView.as_view(), name='catalog'),
     path('product/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
     path('load-more-reviews/', DynamicReviewLoad.as_view(), name='load-more-reviews'),

@@ -1,5 +1,6 @@
 {% extends 'app_store/base.html' %}
 {% load static %}
+{% load replace_url %}
 
 {% block middle %}
 <div class="Middle Middle_top">
@@ -102,9 +103,13 @@
                                 </div>
                                 <div class="Card-category">{{ product.category.name }}</div>
                                 <div class="Card-hover">
-                                    <a class="Card-btn" href="#">
-                                        <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
-                                    </a>
+                                    <form id ="form{{ product.id }}" method="post" action="{% url 'app_store:add_product' product_id=product.id url_redirect=request.get_full_path|replace_url %}">
+                                        {% csrf_token %}
+                                        {{ form.quantity }}
+                                        <a class="Card-btn" href="javascript:;" onclick="document.getElementById('form{{ product.id }}').submit();">
+                                            <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
+                                        </a>
+                                    </form>
                                 </div>
                             </div>
                         </div>

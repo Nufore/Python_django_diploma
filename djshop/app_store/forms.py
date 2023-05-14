@@ -16,6 +16,11 @@ class UpdateQuantityForm(forms.Form):
     quantity = forms.IntegerField(required=False, initial=1, widget=forms.HiddenInput)
 
 
+class AddBaseProductForm(forms.Form):
+    quantity = forms.IntegerField(required=False, initial=1, widget=forms.HiddenInput)
+    update = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput)
+
+
 class OrderProfileForm(forms.ModelForm):
     fio = forms.CharField(required=True, widget=forms.TextInput())
     phone_number = forms.CharField()

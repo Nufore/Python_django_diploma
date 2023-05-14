@@ -1,4 +1,5 @@
 {% load static %}
+{% load replace_url %}
 <!--END-->
 <!--END--><!DOCTYPE html><!--[if IE 7]>
 <html class="ie7" lang="ru">
@@ -351,9 +352,13 @@ p.error-browser
                                             </div>
                                             <div class="Card-category">{{ product.category.name }}</div>
                                             <div class="Card-hover">
-                                                <a class="Card-btn" href="#">
-                                                    <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
-                                                </a>
+                                                <form id ="form{{ product.id }}" method="post" action="{% url 'app_store:add_product' product_id=product.id url_redirect=request.get_full_path|replace_url %}">
+                                                    {% csrf_token %}
+                                                    {{ form.quantity }}
+                                                    <a class="Card-btn" href="javascript:;" onclick="document.getElementById('form{{ product.id }}').submit();">
+                                                        <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
+                                                    </a>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -373,9 +378,13 @@ p.error-browser
                                             </div>
                                             <div class="Card-category">{{ product.category.name }}</div>
                                             <div class="Card-hover">
-                                                <a class="Card-btn" href="#">
-                                                    <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
-                                                </a>
+                                                <form id ="form{{ product.id }}" method="post" action="{% url 'app_store:add_product' product_id=product.id url_redirect=request.get_full_path|replace_url %}">
+                                                    {% csrf_token %}
+                                                    {{ form.quantity }}
+                                                    <a class="Card-btn" href="javascript:;" onclick="document.getElementById('form{{ product.id }}').submit();">
+                                                        <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
+                                                    </a>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -395,9 +404,13 @@ p.error-browser
                                             </div>
                                             <div class="Card-category">{{ product.category.name }}</div>
                                             <div class="Card-hover">
-                                                <a class="Card-btn" href="#">
-                                                    <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
-                                                </a>
+                                                <form id ="form{{ product.id }}" method="post" action="{% url 'app_store:add_product' product_id=product.id url_redirect=request.get_full_path|replace_url %}">
+                                                    {% csrf_token %}
+                                                    {{ form.quantity }}
+                                                    <a class="Card-btn" href="javascript:;" onclick="document.getElementById('form{{ product.id }}').submit();">
+                                                        <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
+                                                    </a>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -488,9 +501,13 @@ p.error-browser
                                 </div>
                                 <div class="Card-category">{{ limited_product.category.name }}</div>
                                 <div class="Card-hover">
-                                    <a class="Card-btn" href="#">
-                                        <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
-                                    </a>
+                                    <form id ="form{{ limited_product.id }}" method="post" action="{% url 'app_store:add_product' product_id=limited_product.id url_redirect=request.get_full_path|replace_url %}">
+                                        {% csrf_token %}
+                                        {{ form.quantity }}
+                                        <a class="Card-btn" href="javascript:;" onclick="document.getElementById('form{{ limited_product.id }}').submit();">
+                                            <img src="{% static 'assets/img/icons/card/cart.svg' %}" alt="cart.svg"/>
+                                        </a>
+                                    </form>
                                 </div>
                               </div>
                             </div>

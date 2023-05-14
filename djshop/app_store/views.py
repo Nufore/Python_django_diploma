@@ -14,7 +14,8 @@ from cart.cart import Cart
 from cart.forms import CartAddProductForm
 from app_users.models import Profile
 from payment_api.models import PaymentTransactions
-from .forms import AuthForm, OrderRegistryForm, AccountForm
+from .forms import AuthForm, OrderRegistryForm, AccountForm, AddBaseProductForm
+from django.views.decorators.http import require_POST
 
 
 class ProductDetailView(DetailView):
@@ -81,6 +82,25 @@ class ProductListView(ListView):
     context_object_name = 'product_list'
     paginate_by = 4
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = AddBaseProductForm()
+        return context
+
+
+@require_POST
+def base_add_product(request, product_id, url_redirect):
+    url = url_redirect.replace('%', '/').lower()
+    cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    form = AddBaseProductForm(request.POST)
+    if form.is_valid():
+        cd = form.cleaned_data
+        cart.add(product=product,
+                 quantity=cd['quantity'],
+                 update_quantity=cd['update'])
+    return redirect(url)
+
 
 def base(request):
     # три избранные категории товаров
@@ -101,9 +121,11 @@ def base(request):
     # слайдер с ограниченным тиражом (Limited edition)
     limited_edition_products = Product.objects.filter(limited_edition=True).order_by('id')[:16]
 
+    form = AddBaseProductForm()
     return render(request, 'app_store/base.html', {'product_categories_parameters': product_categories_parameters,
                                                    'products': products,
-                                                   'limited_edition_products': limited_edition_products})
+                                                   'limited_edition_products': limited_edition_products,
+                                                   'form': form})
 
 
 class CartView(View):

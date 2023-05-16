@@ -28,6 +28,7 @@ body {
 
 .pop_up.active {
     display: block;
+    z-index: 10;
 }
 
 .pop_up_container {
@@ -44,6 +45,26 @@ body {
     text-align: center;
     padding: 100px 15px 110px 15px;
     position: relative;
+}
+
+.pop_up_body button {
+    background: #0063d1;
+    color: #fff;
+}
+
+.pop_up_body button:hover {
+    background: #fff;
+    color: #7c8088;
+}
+
+.pop_up_body a {
+    background: #3cb878;
+    color: #fff;
+}
+
+.pop_up_body a:hover {
+    background: #fff;
+    color: #7c8088;
 }
 
 .pop_up_close {

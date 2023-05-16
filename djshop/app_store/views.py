@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
@@ -99,6 +100,7 @@ def base_add_product(request, product_id, url_redirect):
         cart.add(product=product,
                  quantity=cd['quantity'],
                  update_quantity=cd['update'])
+    messages.add_message(request, messages.INFO, "Товар добавлен в корзину.")
     return redirect(url)
 
 

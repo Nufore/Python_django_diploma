@@ -1,5 +1,6 @@
 {% extends 'app_store/base.html' %}
 {% load static %}
+{% load replace_url %}
 
 {% block middle %}
 <div class="Middle Middle_top">
@@ -71,7 +72,7 @@
 <!--                            </ul>-->
                             {{ object.description }}
                         </div>
-                        <form method="post" action="{% url 'cart:cart_add' object.id %}">
+                        <form method="post" action="{% url 'app_store:add_product' product_id=object.id url_redirect=request.get_full_path|replace_url %}">
                             {% csrf_token %}
                             <div class="ProductCard-cart">
                                 <div class="ProductCard-cartElement ProductCard-cartElement_amount">
@@ -297,6 +298,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
 {% block addition %}

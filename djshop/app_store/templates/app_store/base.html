@@ -370,7 +370,7 @@ p.error-browser
                                     </a>
                                     <div class="Card-content">
                                         <strong class="Card-title">
-                                            <a href="{% url 'app_store:product_detail' product.id %}">{{ product.name }}, {{forloop.counter}}</a>
+                                            <a href="{% url 'app_store:product_detail' product.id %}">{{ product.name }}</a>
                                         </strong>
                                         <div class="Card-description">
                                             <div class="Card-cost">
@@ -641,6 +641,37 @@ p.error-browser
     <script src="{% static 'assets/plg/Slider/slick.min.js' %}"></script>
     <script src="{% static 'assets/js/scripts.js' %}"></script>
 </body>
+{% block pop_up %}
+    {% if messages %}
+            <div class="pop_up active" id="pop_up">
+                <div class="pop_up_container">
+                    <div class="pop_up_body" id="pop_up_body">
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        <button class="btn btn_continue" id="btn_continue">Продолжить покупки</button>
+                        <a class="btn btn_muted" href="{% url 'app_store:cart' %}">Перейти в корзину</a>
+                        <div class="pop_up_close" id="pop_up_close">&#10006</div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+    <script>
+        const closePopUp = document.getElementById('pop_up_close');
+        const PopUp = document.getElementById('pop_up');
+        const btn_continue = document.getElementById('btn_continue');
+
+        closePopUp.addEventListener('click', () => {
+            PopUp.classList.remove('active');
+        })
+        btn_continue.addEventListener('click', () => {
+            PopUp.classList.remove('active');
+        })
+    </script>
+{% endblock %}
 {% block addition %}
 {% endblock %}
 </html>

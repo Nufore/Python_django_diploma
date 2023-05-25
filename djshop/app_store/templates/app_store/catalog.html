@@ -30,7 +30,7 @@
                         <form class="form" action="#" method="post">
                             <div class="form-group">
                                 <div class="range Section-columnRange">
-                                    <input class="range-line" id="price" name="price" type="text" data-type="double"
+                                    <input class="range-line" id="range_price" name="price" type="text" data-type="double"
                                            data-min="7" data-max="50" data-from="7" data-to="27"/>
                                     <div class="range-price">Price:&#32;
                                         <div class="rangePrice">
@@ -80,11 +80,18 @@
             </div>
             <div class="Section-content">
                 <div class="Sort">
-                    <div class="Sort-title">Сортировать по:
-                    </div>
-                    <div class="Sort-variants"><a class="Sort-sortBy Sort-sortBy_dec" href="#">Популярности</a><a
-                            class="Sort-sortBy" href="#">Цене</a><a class="Sort-sortBy" href="#">Отзывам</a><a
-                            class="Sort-sortBy Sort-sortBy_inc" href="#">Новизне</a>
+                    <div class="Sort-title">Сортировать по:</div>
+<!--                    <div class="Sort-variants">-->
+<!--                        <a class="Sort-sortBy Sort-sortBy_dec" href="#">Популярности</a>-->
+<!--                        <a class="Sort-sortBy" href="#">Цене</a>-->
+<!--                        <a class="Sort-sortBy" href="#">Отзывам</a>-->
+<!--                        <a class="Sort-sortBy Sort-sortBy_inc" href="#">Новизне</a>-->
+<!--                    </div>-->
+                    <div class="Sort-variants">
+                        <div id="rating" class="Sort-sortBy">Популярности</div>
+                        <div id="price" class="Sort-sortBy Sort-sortBy_inc">Цене</div>
+                        <div id="reviews" class="Sort-sortBy">Отзывам</div>
+                        <div id="date" class="Sort-sortBy">Новизне</div>
                     </div>
                 </div>
                 <div class="Cards">
@@ -162,4 +169,79 @@
         </div>
     </div>
 </div>
+
+<script>
+    const price_sort = document.getElementById('price');
+    const rating_sort = document.getElementById('rating');
+    const reviews_sort = document.getElementById('reviews');
+    const date_sort = document.getElementById('date');
+
+    price_sort.addEventListener('click', function(e){
+        e.preventDefault();
+        rating_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        reviews_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        date_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+
+        if (price_sort.classList.contains('Sort-sortBy_inc')) {
+            price_sort.classList.remove('Sort-sortBy_inc');
+            price_sort.classList.add('Sort-sortBy_dec');
+        } else if (price_sort.classList.contains('Sort-sortBy_dec')) {
+            price_sort.classList.remove('Sort-sortBy_dec');
+            price_sort.classList.add('Sort-sortBy_inc');
+        } else if (!price_sort.classList.contains('Sort-sortBy_inc', 'Sort-sortBy_dec')) {
+            price_sort.classList.add('Sort-sortBy_inc')
+        }
+    });
+
+    rating_sort.addEventListener('click', function(e){
+        e.preventDefault();
+        price_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        reviews_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        date_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+
+        if (rating_sort.classList.contains('Sort-sortBy_inc')) {
+            rating_sort.classList.remove('Sort-sortBy_inc');
+            rating_sort.classList.add('Sort-sortBy_dec');
+        } else if (rating_sort.classList.contains('Sort-sortBy_dec')) {
+            rating_sort.classList.remove('Sort-sortBy_dec');
+            rating_sort.classList.add('Sort-sortBy_inc');
+        } else if (!rating_sort.classList.contains('Sort-sortBy_inc', 'Sort-sortBy_dec')) {
+            rating_sort.classList.add('Sort-sortBy_inc')
+        }
+    })
+    
+    reviews_sort.addEventListener('click', function(e){
+        e.preventDefault();
+        price_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        rating_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        date_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+
+        if (reviews_sort.classList.contains('Sort-sortBy_inc')) {
+            reviews_sort.classList.remove('Sort-sortBy_inc');
+            reviews_sort.classList.add('Sort-sortBy_dec');
+        } else if (reviews_sort.classList.contains('Sort-sortBy_dec')) {
+            reviews_sort.classList.remove('Sort-sortBy_dec');
+            reviews_sort.classList.add('Sort-sortBy_inc');
+        } else if (!reviews_sort.classList.contains('Sort-sortBy_inc', 'Sort-sortBy_dec')) {
+            reviews_sort.classList.add('Sort-sortBy_inc')
+        }
+    })
+    
+    date_sort.addEventListener('click', function(e){
+        e.preventDefault();
+        price_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        rating_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+        reviews_sort.classList.remove('Sort-sortBy_inc', 'Sort-sortBy_dec');
+
+        if (date_sort.classList.contains('Sort-sortBy_inc')) {
+            date_sort.classList.remove('Sort-sortBy_inc');
+            date_sort.classList.add('Sort-sortBy_dec');
+        } else if (date_sort.classList.contains('Sort-sortBy_dec')) {
+            date_sort.classList.remove('Sort-sortBy_dec');
+            date_sort.classList.add('Sort-sortBy_inc');
+        } else if (!date_sort.classList.contains('Sort-sortBy_inc', 'Sort-sortBy_dec')) {
+            date_sort.classList.add('Sort-sortBy_inc')
+        }
+    })
+</script>
 {% endblock %}

@@ -1,5 +1,6 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.views import View
@@ -7,6 +8,8 @@ from django.views import View
 from .forms import RegisterForm, UserEditForm, UserEditEmailForm, UserChangePasswordForm
 from .models import Profile
 from app_store.models import Order
+
+import time
 
 
 def register_view(request):
@@ -61,13 +64,9 @@ class UserEditView(View):
         form = UserEditForm(data=request.POST, files=request.FILES, instance=Profile.objects.get(user=request.user))
         email_form = UserEditEmailForm(data=request.POST, instance=request.user)
         change_password_form = UserChangePasswordForm(data=request.POST, user=request.user)
-        if form.is_valid() and email_form.is_valid():
-            form.save()
-            email_form.save()
-        else:
-            print(form.errors)
-            print(email_form.errors)
+
         if change_password_form.is_valid():
+            print('change_password_form valid')
             password1 = change_password_form.cleaned_data.get('new_password1')
             password2 = change_password_form.cleaned_data.get('new_password2')
             if password1 and password2:
@@ -78,11 +77,24 @@ class UserEditView(View):
                     user = authenticate(username=request.user.username,
                                         password=change_password_form.cleaned_data.get('new_password1'))
                     login(request, user)
+                    if form.is_valid() and email_form.is_valid():
+                        form.save()
+                        email_form.save()
+                    messages.add_message(request, messages.INFO, "Профиль успешно сохранен")
+                    time.sleep(3)
         else:
-            change_password_form.add_error('__all__', 'Введенные пароли не совпадают!')
-            print(change_password_form.errors)
-            return render(request, 'app_users/profile_.html', context={'form': form,
-                                                                       'change_password_form': change_password_form,
-                                                                       'email_form': email_form})
-        return HttpResponseRedirect(f'/user/account')
+            password1 = change_password_form.cleaned_data.get('new_password1')
+            password2 = change_password_form.cleaned_data.get('new_password2')
+            if password1 == '' and password2 is None and form.is_valid() and email_form.is_valid():
+                form.save()
+                email_form.save()
+                messages.add_message(request, messages.INFO, "Профиль успешно сохранен")
+                time.sleep(3)
+            else:
+                change_password_form.add_error('__all__', 'Введенные пароли не совпадают!')
+                print(change_password_form.errors)
+                return render(request, 'app_users/profile_.html', context={'form': form,
+                                                                           'change_password_form': change_password_form,
+                                                                           'email_form': email_form})
+        return HttpResponseRedirect(f'/user/profile')
 

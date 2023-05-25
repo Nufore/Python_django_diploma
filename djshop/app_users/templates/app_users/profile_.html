@@ -77,8 +77,15 @@ p.error-browser
                 </div>
                 <nav class="row-block">
                     <div class="row ControlPanel-rowSplit">
-                        <div class="row-block"><a class="ControlPanel-title" href="account.html">Login / Register</a>
-                        </div>
+                        {% if request.user.is_authenticated %}
+                            <div class="row-block">
+                                <a class="ControlPanel-title" href="{% url 'logout' %}">Logout</a>
+                            </div>
+                        {% else %}
+                            <div class="row-block">
+                                <a class="ControlPanel-title" href="{% url 'login' %}">Login / Register</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </nav>
             </div>
@@ -313,7 +320,7 @@ p.error-browser
             </div>
             <div class="Section-content">
                 <div class="Profile">
-                    <form class="form Profile-form" action="#" method="post" enctype="multipart/form-data">
+                    <form class="form Profile-form" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="row">
                             <div class="row-block">
@@ -355,7 +362,7 @@ p.error-browser
                                     <label class="form-label" for="{{ form.email.id_for_label }}">E-mail</label>
                                     {{ email_form.email }}
                                 </div>
-                                {{ change_password_form.non_field_errors }}
+                                <div class="form-group">{{ change_password_form.non_field_errors }}</div>
                                 <div class="form-group">
                                     <label class="form-label" for="{{ change_password_form.new_password1.id_for_label }}">Пароль
                                     </label>
@@ -368,11 +375,13 @@ p.error-browser
                                 </div>
                                 <div class="form-group">
                                     <div class="Profile-btn">
-                                        <button class="btn btn_success" type="submit">Сохранить
-                                        </button>
+                                        <button class="btn btn_success" type="submit">Сохранить</button>
                                     </div>
-                                    <div class="Profile-success">Профиль успешно сохранен
-                                    </div>
+                                    {% if messages %}
+                                        {% for message in messages %}
+                                            <div class="Profile-success">{{ message }}</div>
+                                        {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -496,5 +505,45 @@ p.error-browser
 <script src="{% static 'assets/plg/range/ion.rangeSlider.min.js' %}"></script>
 <script src="{% static 'assets/plg/Slider/slick.min.js' %}"></script>
 <script src="{% static 'assets/js/scripts.js' %}"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+<script>
+    $('#id_new_password2').change(function(e){
+           if($('#id_new_password2').val() && !($('#id_new_password1').val()) && !($('.form-error').length)) {
+                $('#id_new_password1').addClass('form-input_error');
+                $('#id_new_password1').after('<div class="form-error">Поле не заполнено!</div>');
+                return false;
+           } else if (!$('#id_new_password2').val()) {
+             $('#id_new_password1').removeClass('form-input_error');
+             $('.form-error').remove();
+           }
+    });
+    $('#id_new_password2').keyup(function(e){
+           if(!($('#id_new_password2').val()) && $('.form-error').length) {
+                $('#id_new_password1').removeClass('form-input_error');
+                $('.form-error').remove();
+           }
+    });
+    $('#id_new_password1').keyup(function(e){
+           if($('#id_new_password1').hasClass('form-input_error')) {
+                $('#id_new_password1').removeClass('form-input_error');
+                $('.form-error').remove();
+           } else if($('#id_new_password2').val() && !($('#id_new_password1').val()) && !($('.form-error').length)) {
+                $('#id_new_password1').addClass('form-input_error');
+                $('#id_new_password1').after('<div class="form-error">Поле не заполнено!</div>');
+                return false;
+           } else if ($('.errorlist').length) {
+                $('.errorlist').parent().remove();
+           }
+    });
+    $('.Profile-form').submit(function(e){
+        e.preventDefault();
+        if ($('.form-error').length) {
+            alert('Нельзя отправить форму!');
+            return false;
+        } else {
+            this.submit();
+        }
+    })
+</script>
 </body>
 </html>

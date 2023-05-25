@@ -977,6 +977,9 @@ select + select {
 .form-group + .form-group {
   margin-top: 25px;
 }
+.form-group li {
+    color: #f26d7d;
+}
 .form_contacts .form-input {
   min-width: auto;
 }

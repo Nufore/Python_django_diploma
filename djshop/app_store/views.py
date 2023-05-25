@@ -82,6 +82,7 @@ class ProductListView(ListView):
     template_name = 'app_store/catalog.html'
     context_object_name = 'product_list'
     paginate_by = 4
+    ordering = ['-id']
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)

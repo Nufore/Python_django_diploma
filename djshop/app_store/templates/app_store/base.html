@@ -660,16 +660,18 @@ p.error-browser
         {% endif %}
     <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
     <script>
-        const closePopUp = document.getElementById('pop_up_close');
         const PopUp = document.getElementById('pop_up');
-        const btn_continue = document.getElementById('btn_continue');
+        if (PopUp) {
+            const closePopUp = document.getElementById('pop_up_close');
+            const btn_continue = document.getElementById('btn_continue');
 
-        closePopUp.addEventListener('click', () => {
-            PopUp.classList.remove('active');
-        })
-        btn_continue.addEventListener('click', () => {
-            PopUp.classList.remove('active');
-        })
+            closePopUp.addEventListener('click', () => {
+                PopUp.classList.remove('active');
+            })
+            btn_continue.addEventListener('click', () => {
+                PopUp.classList.remove('active');
+            })
+        }
     </script>
 {% endblock %}
 {% block addition %}

@@ -52,9 +52,9 @@ class UserChangePasswordForm(SetPasswordForm):
     new_password2 = forms.CharField(
         required=False,
         label="New password confirmation",
-        strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password",
                                           "class": "form-input",
-                                          "placeholder": "Введите пароль повторно"})
+                                          "placeholder": "Введите пароль повторно"}),
+        strip=False,
     )
 

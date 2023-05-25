@@ -79,10 +79,13 @@ p.error-browser
                     <nav class="row-block">
                         <div class="row ControlPanel-rowSplit">
                             {% if request.user.is_authenticated %}
-                                <div class="row-block"><a class="ControlPanel-title" href="{% url 'logout' %}">Logout</a>
+                                <div class="row-block">
+                                    <a class="ControlPanel-title" href="{% url 'logout' %}">Logout</a>
                                 </div>
                             {% else %}
-                                <div class="row-block"><a class="ControlPanel-title" href="{% url 'login' %}">Login / Register</a>
+                                <div class="row-block">
+                                    <a class="ControlPanel-title" href="{% url 'login' %}">Login / Register</a>
+                                </div>
                             {% endif %}
                         </div>
                     </nav>

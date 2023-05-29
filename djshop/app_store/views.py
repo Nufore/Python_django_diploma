@@ -47,6 +47,7 @@ class ProductDetailView(DetailView):
             reply = rev_form.save(commit=False)
             reply.user = request.user
             reply.product = self.get_object()
+            reply.rate = rev_form.cleaned_data.get('rate')
             reply.save()
             return HttpResponseRedirect(f'/store/product/{reply.product.id}')
 
@@ -70,6 +71,7 @@ class DynamicReviewLoad(View):
                 'last_name': review.user.last_name,
                 'added_at': review.added_at.strftime("%B %d / %Y / %H:%m"),
                 'text': review.text,
+                'rate': review.rate,
             }
             print(obj['avatar'])
             data.append(obj)

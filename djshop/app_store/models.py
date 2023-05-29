@@ -45,6 +45,7 @@ class Feedback(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     text = models.TextField(null=False)
+    rate = models.IntegerField(null=True, default=None)
     added_at = models.DateTimeField(auto_now_add=True)
 
 

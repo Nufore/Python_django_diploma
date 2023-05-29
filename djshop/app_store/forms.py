@@ -4,8 +4,12 @@ from app_users.models import Profile
 
 
 class ReviewAddForm(forms.ModelForm):
+    my_choices = [("RATE", [
+        (5, 5), (4, 4), (3, 3), (2, 2), (1, 1)]),
+                  ]
     text = forms.CharField(required=True, widget=forms.Textarea(attrs={'class': 'form-textarea',
                                                                        'placeholder': 'Review'}))
+    rate = forms.ChoiceField(label='RATE', choices=my_choices)
 
     class Meta:
         model = Feedback

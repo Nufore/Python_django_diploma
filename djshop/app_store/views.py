@@ -322,7 +322,20 @@ class OrderDetailView(DetailView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['order_list'] = OrderList.objects.filter(order=self.object)
+        context['change_payment_form'] = OrderPaymentForm()
         return context
+
+    def post(self, request, pk, *args, **kwargs):
+        order = Order.objects.get(id=pk)
+        change_payment_form = OrderPaymentForm(data=request.POST)
+        if change_payment_form.is_valid():
+            pay_type = change_payment_form.cleaned_data.get('payment_type')
+            if pay_type == 'Онлайн картой KEY':
+                order.payment.type = PaymentType.objects.get(id=1)
+            elif pay_type == 'Онлайн со случайного чужого счета KEY':
+                order.payment.type = PaymentType.objects.get(id=2)
+            order.payment.save()
+        return redirect(f'/store/payment/{pk}')
 
 
 class PaymentView(View):

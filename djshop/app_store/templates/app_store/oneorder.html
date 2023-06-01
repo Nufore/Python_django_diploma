@@ -105,6 +105,7 @@
                   </div>
                   {% if object.payment.status.id == 2 %}
                   <div class="Cart-block">
+                    <button class="btn btn_success btn_lg" id="change_payment_type">Изменить способ оплаты</button>
                     <a class="btn btn_primary btn_lg" href="{% url 'app_store:payment' object.id %}">Оплатить</a>
                   </div>
                   {% endif %}
@@ -116,4 +117,54 @@
       </div>
     </div>
   </div>
+{% endblock %}
+{% block pop_up %}
+    <div class="pop_up" id="pop_up">
+        <div class="pop_up_container">
+            <div class="pop_up_body" id="pop_up_body">
+                <form class="form" method="post">
+                    {% csrf_token %}
+                    <ul class="messages">
+                        <li>Изменить способ оплаты</li>
+                    </ul>
+                    <div class="form-group">
+                    {% for pay_type in change_payment_form.payment_type %}
+                        <div>
+                          <label class="toggle" for="{{ pay_type.id_for_label }}">
+                              {{ pay_type.tag }}
+                              <span class="toggle-box"></span>
+                              <span class="toggle-text">{{ pay_type.choice_label }}</span>
+                          </label>
+                        </div>
+                      {% endfor %}
+                  </div>
+                    <button class="btn btn_muted" type="submit">Изменить</button>
+                    <a class="btn btn_continue" id="btn_continue">Отменить</a>
+                    <div class="pop_up_close" id="pop_up_close">&#10006</div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.js" integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+    <script>
+        const changePT = document.getElementById('change_payment_type');
+        var payment_type_0 = document.getElementById('id_payment_type_0');
+        changePT.addEventListener('click', () => {
+                PopUp.classList.add('active');
+                payment_type_0.checked = true;
+            })
+
+        const PopUp = document.getElementById('pop_up');
+        if (PopUp) {
+            const closePopUp = document.getElementById('pop_up_close');
+            const btn_continue = document.getElementById('btn_continue');
+
+            closePopUp.addEventListener('click', () => {
+                PopUp.classList.remove('active');
+            })
+            btn_continue.addEventListener('click', () => {
+                PopUp.classList.remove('active');
+            })
+        }
+    </script>
 {% endblock %}

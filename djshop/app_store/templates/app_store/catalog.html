@@ -1,6 +1,7 @@
 {% extends 'app_store/base.html' %}
 {% load static %}
 {% load replace_url %}
+{% load divide %}
 
 {% block middle %}
 <div class="Middle Middle_top">
@@ -31,10 +32,10 @@
                             <div class="form-group">
                                 <div class="range Section-columnRange">
                                     <input class="range-line" id="range_price" name="price" type="text" data-type="double"
-                                           data-min="7" data-max="50" data-from="7" data-to="27"/>
+                                           data-min="{{ MinMaxPrice.price__min }}" data-max="{{ MinMaxPrice.price__max }}"
+                                           data-from="{{ MinMaxPrice.price__min }}" data-to="{{ MinMaxPrice.price__max|divide:2 }}"/>
                                     <div class="range-price">Price:&#32;
-                                        <div class="rangePrice">
-                                        </div>
+                                        <div class="rangePrice"></div>
                                     </div>
                                 </div>
                             </div>

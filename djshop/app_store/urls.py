@@ -1,13 +1,19 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from .views import ProductDetailView, ProductListView, base, DynamicReviewLoad, CartView, product_list,\
     product_detail, OrderDeliveryView, OrderDetailView, PaymentView, progress_payment, OrderListView, \
-    GetPaymentResponse, HistoryOrderView, base_add_product
+    GetPaymentResponse, HistoryOrderView, base_add_product, ProductViewSet
 
+
+router = routers.DefaultRouter()
+router.register('products', ProductViewSet, basename='api_products')
 
 urlpatterns = [
+    path('api/', include(router.urls)),
+
     path('base/', base, name='base'),
     path('add/<int:product_id>/<str:url_redirect>/', base_add_product, name='add_product'),
-    path('products/', ProductListView.as_view(), name='product_list'),
+    # path('products/', ProductListView.as_view(), name='product_list'),
     path('catalog/', ProductListView.as_view(), name='catalog'),
     path('product/<int:pk>', ProductDetailView.as_view(), name='product_detail'),
     path('load-more-reviews/', DynamicReviewLoad.as_view(), name='load-more-reviews'),

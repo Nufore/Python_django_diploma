@@ -10,13 +10,17 @@ from django.views.generic import DetailView, ListView
 from .models import ProductCategory, Product, ProductPictures, Feedback, UserCart, CartList, Delivery, Order,\
     OrderList, Payment, PaymentType, PaymentStatus, DeliveryType
 from .forms import ReviewAddForm, UpdateQuantityForm, OrderProfileForm, OrderDeliveryForm, OrderPaymentForm
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Min, Max
 from cart.cart import Cart
 from cart.forms import CartAddProductForm
 from app_users.models import Profile
 from payment_api.models import PaymentTransactions
 from .forms import AuthForm, OrderRegistryForm, AccountForm, AddBaseProductForm
 from django.views.decorators.http import require_POST
+from rest_framework import viewsets
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import ProductSerializer
 
 
 class ProductDetailView(DetailView):
@@ -89,7 +93,23 @@ class ProductListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = AddBaseProductForm()
+        context['MinMaxPrice'] = Product.objects.aggregate(Min('price'), Max('price'))
         return context
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [
+        SearchFilter,
+        DjangoFilterBackend,
+        OrderingFilter,
+    ]
+    search_fields = [
+        'name',
+    ]
+    filterset_fields = ['name', 'category', 'price']
+    ordering_fields = ['name', 'price']
 
 
 @require_POST

@@ -4,15 +4,16 @@ from django.urls import reverse
 
 
 class ProductCategory(models.Model):
-    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100)
+    image = models.ImageField(default=None, null=True, upload_to='product_categories/', blank=True)
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('id',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
 class Product(models.Model):
@@ -28,6 +29,8 @@ class Product(models.Model):
 
     class Meta:
         ordering = ('name',)
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товары'
 
     def __str__(self):
         return self.name

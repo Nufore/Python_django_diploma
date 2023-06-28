@@ -3,32 +3,35 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.authtoken.models import Token
-
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
-
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import GenericAPIView
+
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404
 
-from .models import ProductCategory, Product
-from .serializers import CategoriesSerializer, UserSerializer, AuthUserSerializer, ProductSerializer
-
-from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter, OpenApiExample, extend_schema_field
+from .models import ProductCategory, Product, Feedback
+from .serializers import CategoriesSerializer, UserSerializer, AuthUserSerializer, ProductSerializer, ReviewSerializer
 
 
 class CategoriesViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = ProductCategory.objects.all()
     serializer_class = CategoriesSerializer
 
-    def get(self, request: Request) ->Response:
+    def get(self, request: Request) -> Response:
         return self.list(request)
 
 
 class ProductViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+class AddReview(mixins.CreateModelMixin, GenericViewSet):
+    queryset = Feedback.objects.prefetch_related('product')
+    serializer_class = ReviewSerializer
 
 
 class AuthApiView(GenericAPIView):

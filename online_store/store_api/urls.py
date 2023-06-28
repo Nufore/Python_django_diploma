@@ -6,13 +6,15 @@ from .views import (
     sign_up,
     sign_out,
     AuthApiView,
-    ProductViewSet
+    ProductViewSet,
+    AddReview,
 )
 
 
 router = routers.DefaultRouter()
 router.register('categories', CategoriesViewSet)
 router.register('product', ProductViewSet)
+router.register('review', AddReview)
 
 
 urlpatterns = [

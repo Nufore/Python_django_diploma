@@ -45,10 +45,17 @@ class ProductPictures(models.Model):
 
 
 class Feedback(models.Model):
+    rate_choices = [
+        (
+            "RATE",
+            [(5, 5), (4, 4), (3, 3), (2, 2), (1, 1)]
+        ),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     text = models.TextField(null=False)
-    rate = models.IntegerField(null=True, default=None)
+    rate = models.IntegerField(null=True, default=None, choices=rate_choices)
     added_at = models.DateTimeField(auto_now_add=True)
 
 

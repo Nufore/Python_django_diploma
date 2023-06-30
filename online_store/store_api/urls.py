@@ -2,10 +2,9 @@ from django.urls import path, include
 from rest_framework import routers
 from .views import (
     CategoriesViewSet,
-    sign_in,
-    sign_up,
     sign_out,
-    AuthApiView,
+    SignIn,
+    SignUp,
     ProductViewSet,
     AddReview,
 )
@@ -14,13 +13,12 @@ from .views import (
 router = routers.DefaultRouter()
 router.register('categories', CategoriesViewSet)
 router.register('product', ProductViewSet)
-router.register('review', AddReview)
 
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('sign-in/', sign_in),
-    path('sign-up/', sign_up),
+    path('sign-in/', SignIn.as_view()),
+    path('sign-up/', SignUp.as_view()),
     path('sign-out/', sign_out),
-    path('new_sign_in', AuthApiView.as_view()),
+    path('product/<str:pk>/review/', AddReview.as_view({'post': 'create'})),
 ]

@@ -136,10 +136,11 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Store Project API',
-    'DESCRIPTION': 'My site with shop app and custom auth',
+    'TITLE': 'Swagger Diploma Project',
+    # 'DESCRIPTION': 'My site with shop app and custom auth',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SORT_OPERATIONS': False,
     'SORT_OPERATION_PARAMETERS': False,
 }
 

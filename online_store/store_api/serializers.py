@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.shortcuts import get_list_or_404
 from rest_framework import serializers
 
 from .models import ProductCategory, Product, Feedback
@@ -30,12 +30,12 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    class Meta(object):
+    class Meta:
         model = User
         fields = ['id', 'username', 'password', 'email']
 
 
 class AuthUserSerializer(serializers.ModelSerializer):
-    class Meta(object):
+    class Meta:
         model = User
         fields = ['username', 'password']

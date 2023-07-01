@@ -1,11 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.urls import reverse
 
 
-class ProductCategory(models.Model):
+class Category(models.Model):
     title = models.CharField(max_length=100)
     image = models.ImageField(default=None, null=True, upload_to='product_categories/', blank=True)
+    parent = models.ForeignKey('self', null=True, blank=True, related_name='children', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('id',)
@@ -18,7 +18,7 @@ class ProductCategory(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    category = models.ForeignKey(ProductCategory, null=False, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, null=False, on_delete=models.CASCADE)
     picture = models.ImageField(default=None, null=True, upload_to='product_pictures/', blank=True)
     description = models.CharField(max_length=300)
     price = models.DecimalField(max_digits=10, decimal_places=2)

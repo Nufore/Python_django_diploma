@@ -1,14 +1,26 @@
 from django.contrib.auth.models import User
-from django.shortcuts import get_list_or_404
 from rest_framework import serializers
-
-from .models import ProductCategory, Product, Feedback
+from drf_spectacular.utils import extend_schema_serializer
+from .models import Category, Product, Feedback
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    subcategories = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        return {
+            'src': obj.image.url,
+            'alt': 'Image alt string'
+        }
+
+    def get_subcategories(self, obj):
+        subcategories = Category.objects.filter(parent=obj.id)
+        return CategoriesSerializer(subcategories, many=True).data
+
     class Meta:
-        model = ProductCategory
-        fields = ['id', 'title', 'image']
+        model = Category
+        fields = ['id', 'title', 'image', 'subcategories']
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -21,7 +33,7 @@ class ProductSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField()
 
     def get_reviews(self, obj):
-        reviews = get_list_or_404(Feedback, product=obj)
+        reviews = Feedback.objects.filter(product=obj)
         return ReviewSerializer(reviews, many=True).data
 
     class Meta:

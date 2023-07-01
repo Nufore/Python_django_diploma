@@ -12,7 +12,7 @@ from .views import (
 
 router = routers.DefaultRouter()
 router.register('categories', CategoriesViewSet)
-router.register('product', ProductViewSet)
+# router.register('product', ProductViewSet)
 
 
 urlpatterns = [
@@ -20,5 +20,6 @@ urlpatterns = [
     path('sign-in/', SignIn.as_view()),
     path('sign-up/', SignUp.as_view()),
     path('sign-out/', sign_out),
+    path('product/<str:pk>/', ProductViewSet.as_view({'get': 'retrieve'})),
     path('product/<str:pk>/review/', AddReview.as_view({'post': 'create'})),
 ]

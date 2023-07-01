@@ -1,0 +1,12 @@
+.DS_Store
+/venv/
+.idea/
+media/
+
+# Byte-compiled / optimized / DLL recordsdata
+__pycache__
+__pycache__/
+**/__pycache__
+**/__pycache__/
+*.py[cod]
+*$py.class

@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_serializer
-from .models import Category, Product, Feedback
+from .models import Category, Product, Review, Profile
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -25,7 +24,7 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Feedback
+        model = Review
         fields = ['id', 'user', 'product', 'text', 'rate', 'added_at']
 
 
@@ -33,7 +32,7 @@ class ProductSerializer(serializers.ModelSerializer):
     reviews = serializers.SerializerMethodField()
 
     def get_reviews(self, obj):
-        reviews = Feedback.objects.filter(product=obj)
+        reviews = Review.objects.filter(product=obj)
         return ReviewSerializer(reviews, many=True).data
 
     class Meta:
@@ -51,3 +50,27 @@ class AuthUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    fullName = serializers.CharField(source='fullname')
+    avatar = serializers.SerializerMethodField()
+
+    def get_avatar(self, obj):
+        if obj.avatar:
+            return {
+                'src': obj.avatar.url,
+                'alt': 'Image alt string'
+            }
+        else:
+            return None
+
+    class Meta:
+        model = Profile
+        fields = ['fullName', 'email', 'phone', 'avatar']
+
+
+class UpdateProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['fullname', 'email', 'phone']

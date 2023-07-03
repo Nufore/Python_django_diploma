@@ -2,8 +2,9 @@ from rest_framework import status, mixins
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.schemas import DefaultSchema
 
 from drf_spectacular.utils import extend_schema
@@ -12,16 +13,39 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404
 
-from .models import Category, Product, Feedback
-from .serializers import CategoriesSerializer, UserSerializer, AuthUserSerializer, ProductSerializer, ReviewSerializer
+from .models import Category, Product, Review, Profile
+from .serializers import (
+    CategoriesSerializer,
+    UserSerializer,
+    AuthUserSerializer,
+    ProductSerializer,
+    ReviewSerializer,
+    ProfileSerializer,
+    UpdateProfileSerializer
+)
 
 
 class CategoriesViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
+    pagination_class = None
 
     def get(self, request: Request) -> Response:
         return self.list(request)
+
+
+class ProfileView(APIView):
+    def get(self, request: Request) -> Response:
+        user = get_object_or_404(User, id=request.user.id)
+        profile = Profile.objects.get(user=user)
+        return Response(ProfileSerializer(profile).data)
+
+    def post(self, request: Request) -> Response:
+        profile = get_object_or_404(Profile, user=request.user)
+        serializer = UpdateProfileSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.update(instance=profile, validated_data=serializer.data)
+        return Response(ProfileSerializer(profile).data, status=status.HTTP_200_OK)
 
 
 class ProductViewSet(ModelViewSet):
@@ -30,7 +54,7 @@ class ProductViewSet(ModelViewSet):
 
 
 class AddReview(ModelViewSet):
-    queryset = Feedback.objects.prefetch_related('product')
+    queryset = Review.objects.prefetch_related('product')
     serializer_class = ReviewSerializer
     schema = DefaultSchema()
 
@@ -39,7 +63,7 @@ class AddReview(ModelViewSet):
         user = User.objects.get(id=request.data['user'])
         text = request.data['text']
         rate = request.data['rate']
-        review = Feedback.objects.create(product=product, user=user, text=text, rate=rate)
+        review = Review.objects.create(product=product, user=user, text=text, rate=rate)
         review.save()
         return Response({'message': 'ok', 'review': ReviewSerializer(review).data}, status=status.HTTP_200_OK)
 

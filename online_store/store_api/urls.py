@@ -7,12 +7,13 @@ from .views import (
     SignUp,
     ProductViewSet,
     AddReview,
+    ProfileView
 )
 
 
 router = routers.DefaultRouter()
 router.register('categories', CategoriesViewSet)
-# router.register('product', ProductViewSet)
+# router.register('profile', ProfileView)
 
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     path('sign-out/', sign_out),
     path('product/<str:pk>/', ProductViewSet.as_view({'get': 'retrieve'})),
     path('product/<str:pk>/review/', AddReview.as_view({'post': 'create'})),
+    path('profile/', ProfileView.as_view()),
 ]

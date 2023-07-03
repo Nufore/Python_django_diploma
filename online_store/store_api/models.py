@@ -16,6 +16,17 @@ class Category(models.Model):
         return self.title
 
 
+class Profile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    fullname = models.CharField(max_length=100)
+    email = models.EmailField(unique=True, blank=True)
+    phone = models.CharField(unique=True, max_length=10, blank=True)
+    avatar = models.ImageField(default=None, null=True, upload_to='profile_avatars/', blank=True)
+
+    def __str__(self):
+        return self.fullname
+
+
 class Product(models.Model):
     name = models.CharField(max_length=100)
     category = models.ForeignKey(Category, null=False, on_delete=models.CASCADE)
@@ -44,7 +55,7 @@ class ProductPictures(models.Model):
     image = models.ImageField(default=None, null=True, upload_to='product_pictures/')
 
 
-class Feedback(models.Model):
+class Review(models.Model):
     rate_choices = [
         (
             "RATE",

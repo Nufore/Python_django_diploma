@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.core.validators import EmailValidator
 from rest_framework import serializers
 from .models import Category, Product, Review, Profile
 
@@ -53,7 +54,6 @@ class AuthUserSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    fullName = serializers.CharField(source='fullname')
     avatar = serializers.SerializerMethodField()
 
     def get_avatar(self, obj):
@@ -67,10 +67,33 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['fullName', 'email', 'phone', 'avatar']
+        fields = ['fullname', 'email', 'phone', 'avatar']
 
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
+
+    def validate_phone(self, value):
+        if len(value) != 10:
+            raise serializers.ValidationError('Номер должен состоять из 10 цифр')
+        return value
+
     class Meta:
         model = Profile
         fields = ['fullname', 'email', 'phone']
+        extra_kwargs = {
+            'email': {'validators': [EmailValidator, ]},
+            'phone': {'validators': []},
+        }
+
+
+class UserUpdatePasswordSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['password']
+
+
+class UpdateAvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['avatar']

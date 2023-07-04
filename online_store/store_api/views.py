@@ -21,7 +21,9 @@ from .serializers import (
     ProductSerializer,
     ReviewSerializer,
     ProfileSerializer,
-    UpdateProfileSerializer
+    UpdateProfileSerializer,
+    UserUpdatePasswordSerializer,
+    UpdateAvatarSerializer
 )
 
 
@@ -34,7 +36,9 @@ class CategoriesViewSet(mixins.ListModelMixin, GenericViewSet):
         return self.list(request)
 
 
-class ProfileView(APIView):
+class ProfileView(GenericAPIView):
+    serializer_class = ProfileSerializer
+
     def get(self, request: Request) -> Response:
         user = get_object_or_404(User, id=request.user.id)
         profile = Profile.objects.get(user=user)
@@ -46,6 +50,33 @@ class ProfileView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.update(instance=profile, validated_data=serializer.data)
         return Response(ProfileSerializer(profile).data, status=status.HTTP_200_OK)
+
+
+class UserUpdatePassword(GenericAPIView):
+    serializer_class = UserUpdatePasswordSerializer
+
+    def post(self, request: Request) -> Response:
+        user = User.objects.get(id=request.user.id)
+        serializer = UserUpdatePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user.set_password(request.data['password'])
+        user.save()
+        logout(request)
+        return Response({'message': 'password changed successfully'}, status=status.HTTP_200_OK)
+
+
+class ProfileUpdateAvatar(GenericAPIView):
+    serializer_class = UpdateAvatarSerializer
+
+    def post(self, request):
+        print(request.FILES['avatar'])
+        print(request.data)
+        serializer = UpdateAvatarSerializer(data=request.FILES)
+        profile = get_object_or_404(Profile, user=request.user)
+        serializer.is_valid(raise_exception=True)
+        profile.avatar = request.FILES['avatar']
+        profile.save()
+        return Response(UpdateAvatarSerializer(profile).data, status=status.HTTP_200_OK)
 
 
 class ProductViewSet(ModelViewSet):

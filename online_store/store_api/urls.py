@@ -7,7 +7,9 @@ from .views import (
     SignUp,
     ProductViewSet,
     AddReview,
-    ProfileView
+    ProfileView,
+    UserUpdatePassword,
+    ProfileUpdateAvatar
 )
 
 
@@ -24,4 +26,7 @@ urlpatterns = [
     path('product/<str:pk>/', ProductViewSet.as_view({'get': 'retrieve'})),
     path('product/<str:pk>/review/', AddReview.as_view({'post': 'create'})),
     path('profile/', ProfileView.as_view()),
+    path('profile/password/', UserUpdatePassword.as_view()),
+    path('profile/avatar/', ProfileUpdateAvatar.as_view())
+
 ]

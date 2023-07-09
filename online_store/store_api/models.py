@@ -18,41 +18,54 @@ class Category(models.Model):
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    fullname = models.CharField(max_length=100)
-    email = models.EmailField(unique=True, blank=True)
-    phone = models.CharField(unique=True, max_length=10, blank=True)
+    fullName = models.CharField(max_length=100)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=10, blank=True)
     avatar = models.ImageField(default=None, null=True, upload_to='profile_avatars/', blank=True)
 
     def __str__(self):
-        return self.fullname
+        return self.user.username
 
 
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, null=False, on_delete=models.CASCADE)
-    picture = models.ImageField(default=None, null=True, upload_to='product_pictures/', blank=True)
-    description = models.CharField(max_length=300)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    feedback_count = models.IntegerField(default=0, null=False)
-    added_at = models.DateTimeField(auto_now_add=True)
-    manufacturer = models.CharField(max_length=200)
-    limited_edition = models.BooleanField(default=False, null=True)
-
-    class Meta:
-        ordering = ('name',)
-        verbose_name = 'Товар'
-        verbose_name_plural = 'Товары'
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
 
-    # def get_absolute_url(self):
-    #     return reverse('app_store:new_product_detail', args=[self.id])
+
+class Product(models.Model):
+    category = models.ForeignKey(Category, null=False, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    count = models.IntegerField(default=0)
+    date = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=255)
+    tags = models.ManyToManyField(Tag)
+    description = models.CharField(max_length=255)
+    fullDescription = models.CharField(max_length=1000)
+    freeDelivery = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ('id',)
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товары'
+
+    def __str__(self):
+        return self.title
 
 
-class ProductPictures(models.Model):
+class ProductImages(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    image = models.ImageField(default=None, null=True, upload_to='product_pictures/')
+    image = models.ImageField(default=None, null=True, upload_to='product_images/')
+
+
+class ProductSpecifications(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.RESTRICT)
+    name = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name = 'Specification'
 
 
 class Review(models.Model):
@@ -65,9 +78,11 @@ class Review(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    author = models.CharField(max_length=255, null=True, blank=True)
+    email = models.CharField(max_length=255, null=False, default=None)
     text = models.TextField(null=False)
     rate = models.IntegerField(null=True, default=None, choices=rate_choices)
-    added_at = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
 
 
 class UserCart(models.Model):

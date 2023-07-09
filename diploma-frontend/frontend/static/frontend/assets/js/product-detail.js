@@ -27,7 +27,7 @@ var mix = {
             })
         },
         submitReview () {
-            this.postData(`/api/product/${this.product.id}/reviews/`, {
+            this.postData(`/api/product/${this.product.id}/review/`, {
                 author: this.review.author,
                 email: this.review.email,
                 text: this.review.text,

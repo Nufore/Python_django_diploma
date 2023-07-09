@@ -1,7 +1,5 @@
-from django.contrib.auth.models import User
-from django.core.validators import EmailValidator
 from rest_framework import serializers
-from .models import Category, Product, Review, Profile
+from .models import Category, Product, Review, ProductImages, Tag, ProductSpecifications
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -23,84 +21,105 @@ class CategoriesSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'subcategories']
 
 
-class ReviewSerializer(serializers.ModelSerializer):
+class CreateReviewSerializer(serializers.ModelSerializer):
+    def create(self, validated_data, user, product_id):
+        product = Product.objects.get(id=product_id)
+        review = Review.objects.create(
+            user=user,
+            product=product,
+            author=validated_data['author'],
+            email=validated_data['email'],
+            text=validated_data['text'],
+            rate=validated_data['rate']
+        )
+        review.save()
+        return review
+
     class Meta:
         model = Review
-        fields = ['id', 'user', 'product', 'text', 'rate', 'added_at']
+        fields = ['author', 'email', 'text', 'rate', 'date']
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField()
+
+    def get_date(self, obj):
+        date = obj.date.strftime("%Y-%m-%d %H:%m")
+        return date
+
+    class Meta:
+        model = Review
+        fields = ['author', 'email', 'text', 'rate', 'date']
+
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']
+
+
+class ProductSpecificationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductSpecifications
+        fields = ['name', 'value']
+
+
+class ProductImagesSerializer(serializers.ModelSerializer):
+    # image = serializers.SerializerMethodField()
+    src = serializers.CharField(source='image.url')
+    # alt = serializers.CharField()
+    #
+    # def get_image(self, obj):
+    #     return {
+    #         'src': obj.image.url,
+    #         'alt': 'Image alt string'
+    #     }
+
+    class Meta:
+        model = ProductImages
+        fields = ['src']
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
+    specifications = serializers.SerializerMethodField()
+
+    def get_date(self, obj):
+        return obj.date.strftime("%a %b %d %Y %H:%M:%S %Z%z")
 
     def get_reviews(self, obj):
         reviews = Review.objects.filter(product=obj)
         return ReviewSerializer(reviews, many=True).data
 
+    def get_images(self, obj):
+        images = ProductImages.objects.filter(product=obj)
+        return ProductImagesSerializer(images, many=True).data
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(product=obj)
+        return TagSerializer(tags, many=True).data
+
+    def get_specifications(self, obj):
+        specifications = ProductSpecifications.objects.filter(product=obj)
+        return ProductSpecificationsSerializer(specifications, many=True).data
+
     class Meta:
         model = Product
-        fields = ['id', 'category', 'price', 'added_at', 'name', 'description', 'picture', 'reviews']
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'password', 'email']
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['username', 'password']
-
-
-class AuthUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'password']
-
-
-class ProfileSerializer(serializers.ModelSerializer):
-    avatar = serializers.SerializerMethodField()
-
-    def get_avatar(self, obj):
-        if obj.avatar:
-            return {
-                'src': obj.avatar.url,
-                'alt': 'Image alt string'
-            }
-        else:
-            return None
-
-    class Meta:
-        model = Profile
-        fields = ['fullname', 'email', 'phone', 'avatar']
-
-
-class UpdateProfileSerializer(serializers.ModelSerializer):
-
-    def validate_phone(self, value):
-        if len(value) != 10:
-            raise serializers.ValidationError('Номер должен состоять из 10 цифр')
-        return value
-
-    class Meta:
-        model = Profile
-        fields = ['fullname', 'email', 'phone']
-        extra_kwargs = {
-            'email': {'validators': [EmailValidator, ]},
-            'phone': {'validators': []},
-        }
-
-
-class UserUpdatePasswordSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ['password']
-
-
-class UpdateAvatarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['avatar']
+        fields = [
+            'id',
+            'category',
+            'price',
+            'count',
+            'date',
+            'title',
+            'description',
+            'fullDescription',
+            'freeDelivery',
+            'images',
+            'tags',
+            'reviews',
+            'specifications',
+        ]

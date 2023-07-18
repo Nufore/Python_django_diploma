@@ -98,7 +98,7 @@ var mix = {
             filter: {
                 name: '',
                 minPrice: 0,
-                maxPrice: 50000,
+                maxPrice: 12500,
                 freeDelivery: false,
                 available: true
             }

@@ -11,7 +11,7 @@ from .paginations import CatalogPagination
 from .filters import ProductFilter
 from .serializers import (
     CategoriesSerializer,
-    ProductSerializer,
+    ProductSerializer, CatalogSerializer,
     ReviewSerializer, CreateReviewSerializer,
     TagSerializer
 )
@@ -28,7 +28,7 @@ class CategoriesViewSet(mixins.ListModelMixin, GenericViewSet):
 
 class CatalogViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = CatalogSerializer
     pagination_class = CatalogPagination
     filterset_class = ProductFilter
 

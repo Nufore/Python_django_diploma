@@ -1,3 +1,4 @@
+from django.db.models import Sum, Count
 from rest_framework import serializers
 from .models import Category, Product, Review, ProductImages, Tag, ProductSpecifications
 
@@ -86,6 +87,7 @@ class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     specifications = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
 
     def get_date(self, obj):
         return obj.date.strftime("%a %b %d %Y %H:%M:%S %Z%z")
@@ -106,6 +108,14 @@ class ProductSerializer(serializers.ModelSerializer):
         specifications = ProductSpecifications.objects.filter(product=obj)
         return ProductSpecificationsSerializer(specifications, many=True).data
 
+    def get_rating(self, obj):
+        count_review = Review.objects.filter(product=obj).aggregate(Count('id'))
+        if count_review['id__count'] >= 1:
+            sum_review_rate = Review.objects.filter(product=obj).aggregate(Sum('rate'))
+            return round(sum_review_rate['rate__sum'] / count_review['id__count'], 2)
+        else:
+            return None
+
     class Meta:
         model = Product
         fields = [
@@ -122,4 +132,12 @@ class ProductSerializer(serializers.ModelSerializer):
             'tags',
             'reviews',
             'specifications',
+            'rating',
         ]
+
+
+class CatalogSerializer(ProductSerializer):
+
+    def get_reviews(self, obj):
+        reviews = Review.objects.filter(product=obj).aggregate(Count('id'))
+        return reviews['id__count']

@@ -1,6 +1,14 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import (CategoriesViewSet, ProductViewSet, AddReview, CatalogViewSet, GetTags)
+from .views import (
+    CategoriesViewSet,
+    ProductViewSet,
+    AddReview,
+    CatalogViewSet,
+    GetTags,
+    PopularProducts, LimitedProducts, Banners,
+    Sale
+)
 from .profile_views import (sign_out, SignIn, SignUp, ProfileView, ProfileUpdatePassword, ProfileUpdateAvatar)
 
 
@@ -20,5 +28,8 @@ urlpatterns = [
     path('profile/password/', ProfileUpdatePassword.as_view()),
     path('profile/avatar/', ProfileUpdateAvatar.as_view()),
     path('tags/', GetTags.as_view()),
-
+    path('products/popular/', PopularProducts.as_view({'get': 'list'})),
+    path('products/limited/', LimitedProducts.as_view({'get': 'list'})),
+    path('banners/', Banners.as_view({'get': 'list'})),
+    path('sales/', Sale.as_view({'get': 'list'}))
 ]

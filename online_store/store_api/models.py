@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum, Count, QuerySet
 from django.contrib.auth.models import User
 
 
@@ -34,6 +35,15 @@ class Tag(models.Model):
         return self.name
 
 
+class Sale(models.Model):
+    discount = models.DecimalField(max_digits=10, decimal_places=2)
+    date_from = models.DateTimeField()
+    date_to = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.discount)
+
+
 class Product(models.Model):
     category = models.ForeignKey(Category, null=False, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -44,6 +54,9 @@ class Product(models.Model):
     description = models.CharField(max_length=255)
     fullDescription = models.CharField(max_length=1000)
     freeDelivery = models.BooleanField(default=False)
+    rating = models.DecimalField(null=True, default=None, max_digits=3, decimal_places=2)
+    reviews = models.IntegerField(default=0)
+    sale = models.OneToOneField(Sale, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         ordering = ('id',)
@@ -52,6 +65,17 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title
+
+    def update_rating(self):
+        count_review = Review.objects.filter(product=self).aggregate(Count('id'))
+        if count_review['id__count'] >= 1:
+            sum_review_rate = Review.objects.filter(product=self).aggregate(Sum('rate'))
+            self.rating = round(sum_review_rate['rate__sum'] / count_review['id__count'], 2)
+            self.reviews = count_review['id__count']
+            self.save()
+            return self.rating
+        else:
+            return None
 
 
 class ProductImages(models.Model):

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.db.models import Sum, Count
 from rest_framework import serializers
 from .models import Category, Product, Review, ProductImages, Tag, ProductSpecifications
@@ -34,6 +35,7 @@ class CreateReviewSerializer(serializers.ModelSerializer):
             rate=validated_data['rate']
         )
         review.save()
+        product.update_rating()
         return review
 
     class Meta:
@@ -87,7 +89,7 @@ class ProductSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     specifications = serializers.SerializerMethodField()
-    rating = serializers.SerializerMethodField()
+    price = serializers.SerializerMethodField()
 
     def get_date(self, obj):
         return obj.date.strftime("%a %b %d %Y %H:%M:%S %Z%z")
@@ -108,13 +110,11 @@ class ProductSerializer(serializers.ModelSerializer):
         specifications = ProductSpecifications.objects.filter(product=obj)
         return ProductSpecificationsSerializer(specifications, many=True).data
 
-    def get_rating(self, obj):
-        count_review = Review.objects.filter(product=obj).aggregate(Count('id'))
-        if count_review['id__count'] >= 1:
-            sum_review_rate = Review.objects.filter(product=obj).aggregate(Sum('rate'))
-            return round(sum_review_rate['rate__sum'] / count_review['id__count'], 2)
+    def get_price(self, obj):
+        if obj.sale and obj.sale.date_to >= datetime.now() + timedelta(hours=3):
+            return obj.price - obj.sale.discount
         else:
-            return None
+            return obj.price
 
     class Meta:
         model = Product
@@ -130,8 +130,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'freeDelivery',
             'images',
             'tags',
-            'reviews',
             'specifications',
+            'reviews',
             'rating',
         ]
 
@@ -141,3 +141,27 @@ class CatalogSerializer(ProductSerializer):
     def get_reviews(self, obj):
         reviews = Review.objects.filter(product=obj).aggregate(Count('id'))
         return reviews['id__count']
+
+
+class SaleSerializer(serializers.ModelSerializer):
+    salePrice = serializers.SerializerMethodField()
+    dateFrom = serializers.SerializerMethodField()
+    dateTo = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+
+    def get_salePrice(self, obj):
+        return obj.price - obj.sale.discount
+
+    def get_dateFrom(self, obj):
+        return obj.sale.date_from.strftime("%Y-%m-%d")
+
+    def get_dateTo(self, obj):
+        return obj.sale.date_to.strftime("%Y-%m-%d")
+
+    def get_images(self, obj):
+        images = ProductImages.objects.filter(product=obj)
+        return ProductImagesSerializer(images, many=True).data
+
+    class Meta:
+        model = Product
+        fields = ['id', 'price', 'salePrice', 'dateFrom', 'dateTo', 'title', 'images']

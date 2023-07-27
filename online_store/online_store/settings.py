@@ -153,3 +153,5 @@ SPECTACULAR_SETTINGS = {
 
 MEDIA_ROOT = os.path.join(BASE_DIR.parent, 'diploma-frontend/frontend/static/media')
 MEDIA_URL = '/media/'
+
+CART_SESSION_ID = 'cart'

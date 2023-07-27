@@ -7,7 +7,8 @@ from .views import (
     CatalogViewSet,
     GetTags,
     PopularProducts, LimitedProducts, Banners,
-    Sale
+    Sale,
+    GetBasket
 )
 from .profile_views import (sign_out, SignIn, SignUp, ProfileView, ProfileUpdatePassword, ProfileUpdateAvatar)
 
@@ -31,5 +32,6 @@ urlpatterns = [
     path('products/popular/', PopularProducts.as_view({'get': 'list'})),
     path('products/limited/', LimitedProducts.as_view({'get': 'list'})),
     path('banners/', Banners.as_view({'get': 'list'})),
-    path('sales/', Sale.as_view({'get': 'list'}))
+    path('sales/', Sale.as_view({'get': 'list'})),
+    path('basket/', GetBasket.as_view()),
 ]

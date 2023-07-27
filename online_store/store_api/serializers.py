@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django.db.models import Sum, Count
 from rest_framework import serializers
-from .models import Category, Product, Review, ProductImages, Tag, ProductSpecifications
+from .models import Category, Product, Review, ProductImages, Tag, ProductSpecifications, CartList
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -141,6 +141,54 @@ class CatalogSerializer(ProductSerializer):
     def get_reviews(self, obj):
         reviews = Review.objects.filter(product=obj).aggregate(Count('id'))
         return reviews['id__count']
+
+
+class CartSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='product.id')
+    category = serializers.IntegerField(source='product.category.id')
+    price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2)
+    date = serializers.SerializerMethodField()
+    title = serializers.CharField(source='product.title')
+    description = serializers.CharField(source='product.description')
+    freeDelivery = serializers.CharField(source='product.freeDelivery')
+    images = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
+    rating = serializers.CharField(source='product.rating')
+
+    def get_date(self, obj):
+        return obj.product.date.strftime("%a %b %d %Y %H:%M:%S %Z%z")
+
+    def get_images(self, obj):
+        images = ProductImages.objects.filter(product=obj.product)
+        return ProductImagesSerializer(images, many=True).data
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(product=obj.product)
+        return TagSerializer(tags, many=True).data
+
+    def get_reviews(self, obj):
+        reviews = Review.objects.filter(product=obj.product).aggregate(Count('id'))
+        return reviews['id__count']
+
+    class Meta:
+        model = CartList
+        fields = [
+            'id',
+            'category',
+            'price',
+            'count',
+            'date',
+            'title',
+            'description',
+            # 'fullDescription',
+            'freeDelivery',
+            'images',
+            'tags',
+            # 'specifications',
+            'reviews',
+            'rating',
+        ]
 
 
 class SaleSerializer(serializers.ModelSerializer):

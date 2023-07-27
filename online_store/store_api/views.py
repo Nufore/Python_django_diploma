@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from rest_framework import status, mixins
+from rest_framework.utils import json
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -8,15 +9,17 @@ from rest_framework.schemas import DefaultSchema
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 
-from .models import Category, Product, Review, Tag
+from .models import Category, Product, Review, Tag, CartList
 from .paginations import CatalogPagination
 from .filters import ProductFilter
+from .cart import Cart
 from .serializers import (
     CategoriesSerializer,
     ProductSerializer, CatalogSerializer,
     ReviewSerializer, CreateReviewSerializer,
     TagSerializer,
     SaleSerializer,
+    CartSerializer,
 )
 
 
@@ -108,3 +111,33 @@ class GetTags(GenericAPIView):
         tags = Tag.objects.filter(product__in=products).distinct()
         print('tags: ', tags)
         return Response(TagSerializer(tags, many=True).data)
+
+
+class GetBasket(GenericAPIView):
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        cart = Cart(self.request)
+        return CartList.objects.filter(cart=cart.cart).order_by('product_id')
+
+    def get(self, request):
+        return Response(CartSerializer(self.get_queryset(), many=True).data)
+
+    def post(self, request):
+        cart = Cart(request)
+        product = Product.objects.get(id=request.data.get('id'))
+        count = request.data.get('count')
+        cart.add(product=product, quantity=count)
+        cart_list = CartList.objects.filter(cart=cart.cart).order_by('product_id')
+        # products = Product.objects.filter(id__in=[item.product.id for item in cart_list])
+        return Response(CartSerializer(cart_list, many=True).data, status=status.HTTP_200_OK)
+
+    def delete(self, request: Request) -> Response:
+        data = json.loads(request.body.decode('utf-8'))
+        cart = Cart(request)
+        product = Product.objects.get(id=data.get('id'))
+        count = data.get('count')
+        cart.add(product=product, quantity=-count)
+        cart_list = CartList.objects.filter(cart=cart.cart).order_by('product_id')
+        # products = Product.objects.filter(id__in=[item.product.id for item in cart_list])
+        return Response(CartSerializer(cart_list, many=True).data, status=status.HTTP_200_OK)

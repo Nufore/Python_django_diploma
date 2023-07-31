@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django.db.models import Sum, Count
 from rest_framework import serializers
-from .models import Category, Product, Review, ProductImages, Tag, ProductSpecifications, CartList
+from .models import Category, Product, Review, ProductImages, Tag, ProductSpecifications, CartList, Order, OrderList
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -143,6 +143,54 @@ class CatalogSerializer(ProductSerializer):
         return reviews['id__count']
 
 
+class CartSessionSerializer(serializers.Serializer):
+    id = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    count = serializers.IntegerField(source='quantity')
+    date = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    freeDelivery = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    tags = serializers.SerializerMethodField()
+    reviews = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
+
+    def get_id(self, obj):
+        return obj['product'].id
+
+    def get_category(self, obj):
+        return obj['product'].category.id
+
+    def get_date(self, obj):
+        return obj['product'].date.strftime("%a %b %d %Y %H:%M:%S %Z%z")
+
+    def get_title(self, obj):
+        return obj['product'].title
+
+    def get_description(self, obj):
+        return obj['product'].description
+
+    def get_freeDelivery(self, obj):
+        return obj['product'].freeDelivery
+
+    def get_images(self, obj):
+        images = ProductImages.objects.filter(product=obj['product'])
+        return ProductImagesSerializer(images, many=True).data
+
+    def get_tags(self, obj):
+        tags = Tag.objects.filter(product=obj['product'])
+        return TagSerializer(tags, many=True).data
+
+    def get_reviews(self, obj):
+        reviews = Review.objects.filter(product=obj['product']).aggregate(Count('id'))
+        return reviews['id__count']
+
+    def get_rating(self, obj):
+        return obj['product'].rating
+
+
 class CartSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source='product.id')
     category = serializers.IntegerField(source='product.category.id')
@@ -213,3 +261,38 @@ class SaleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'price', 'salePrice', 'dateFrom', 'dateTo', 'title', 'images']
+
+
+class GetOrderSerializer(serializers.ModelSerializer):
+    createdAt = serializers.DateTimeField(source='order_date')
+    fullName = serializers.CharField(source='user.profile.fullName')
+    email = serializers.CharField(source='user.profile.email')
+    phone = serializers.CharField(source='user.profile.phone')
+    deliveryType = serializers.CharField(source='delivery.type.name')
+    paymentType = serializers.CharField(source='payment.type.name')
+    totalCost = serializers.FloatField(source='total_cost')
+    status = serializers.CharField(source='payment.status.name')
+    city = serializers.CharField(source='delivery.city')
+    address = serializers.CharField(source='delivery.address')
+    products = serializers.SerializerMethodField()
+
+    def get_products(self, obj):
+        items = OrderList.objects.filter(order=obj)
+        return CartSerializer(items, many=True).data
+
+    class Meta:
+        model = Order
+        fields = [
+            'id',
+            'createdAt',
+            'fullName',
+            'email',
+            'phone',
+            'deliveryType',
+            'paymentType',
+            'totalCost',
+            'status',
+            'city',
+            'address',
+            'products',
+        ]

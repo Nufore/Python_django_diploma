@@ -18,7 +18,7 @@ class Category(models.Model):
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     fullName = models.CharField(max_length=100)
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=10, blank=True)
@@ -126,9 +126,15 @@ class PaymentType(models.Model):
     code = models.IntegerField()
     name = models.CharField(max_length=40)
 
+    def __str__(self):
+        return self.name
+
 
 class PaymentStatus(models.Model):
     name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
 
 
 class Payment(models.Model):
@@ -145,6 +151,9 @@ class DeliveryType(models.Model):
     base_less_than = models.FloatField(default=2000.0, null=True)
     base_price = models.FloatField(default=200, null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Delivery(models.Model):
     type = models.ForeignKey(DeliveryType, on_delete=models.CASCADE)
@@ -156,8 +165,8 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
     total_cost = models.FloatField(default=0.0, null=False)
-    payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
-    delivery = models.ForeignKey(Delivery, on_delete=models.CASCADE)
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, null=True)
+    delivery = models.ForeignKey(Delivery, on_delete=models.CASCADE, null=True)
 
 
 class OrderList(models.Model):

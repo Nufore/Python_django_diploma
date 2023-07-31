@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from rest_framework import status, mixins
 from rest_framework.utils import json
+from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -8,8 +9,10 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from rest_framework.schemas import DefaultSchema
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
+from django.db.models import Sum, F
 
-from .models import Category, Product, Review, Tag, CartList
+from .models import Category, Product, Review, Tag, UserCart, CartList, Order, OrderList, Delivery, DeliveryType, \
+    Payment, PaymentType, PaymentStatus
 from .paginations import CatalogPagination
 from .filters import ProductFilter
 from .cart import Cart
@@ -19,7 +22,8 @@ from .serializers import (
     ReviewSerializer, CreateReviewSerializer,
     TagSerializer,
     SaleSerializer,
-    CartSerializer,
+    CartSerializer, CartSessionSerializer,
+    GetOrderSerializer,
 )
 
 
@@ -113,24 +117,46 @@ class GetTags(GenericAPIView):
         return Response(TagSerializer(tags, many=True).data)
 
 
-class GetBasket(GenericAPIView):
-    serializer_class = CartSerializer
+class Basket(GenericAPIView):
+    # serializer_class = CartSerializer
+
+    def get_serializer_class(self):
+        cart = Cart(self.request)
+        if cart.is_model_cart():
+            return CartSerializer
+        else:
+            return CartSessionSerializer
 
     def get_queryset(self):
         cart = Cart(self.request)
-        return CartList.objects.filter(cart=cart.cart).order_by('product_id')
+        if cart.is_model_cart():
+            return CartList.objects.filter(cart=cart.cart).order_by('product_id')
+        else:
+            return None
 
     def get(self, request):
-        return Response(CartSerializer(self.get_queryset(), many=True).data)
+        cart = Cart(request)
+        if cart.is_model_cart():
+            return Response(CartSerializer(self.get_queryset(), many=True).data)
+        else:
+            return Response(
+                CartSessionSerializer(cart.get_cart_for_serializer(), many=True).data,
+                status=status.HTTP_200_OK
+            )
 
     def post(self, request):
         cart = Cart(request)
         product = Product.objects.get(id=request.data.get('id'))
         count = request.data.get('count')
         cart.add(product=product, quantity=count)
-        cart_list = CartList.objects.filter(cart=cart.cart).order_by('product_id')
-        # products = Product.objects.filter(id__in=[item.product.id for item in cart_list])
-        return Response(CartSerializer(cart_list, many=True).data, status=status.HTTP_200_OK)
+        if cart.is_model_cart():
+            cart_list = CartList.objects.filter(cart=cart.cart).order_by('product_id')
+            return Response(CartSerializer(cart_list, many=True).data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                CartSessionSerializer(cart.get_cart_for_serializer(), many=True).data,
+                status=status.HTTP_200_OK
+            )
 
     def delete(self, request: Request) -> Response:
         data = json.loads(request.body.decode('utf-8'))
@@ -138,6 +164,50 @@ class GetBasket(GenericAPIView):
         product = Product.objects.get(id=data.get('id'))
         count = data.get('count')
         cart.add(product=product, quantity=-count)
-        cart_list = CartList.objects.filter(cart=cart.cart).order_by('product_id')
-        # products = Product.objects.filter(id__in=[item.product.id for item in cart_list])
-        return Response(CartSerializer(cart_list, many=True).data, status=status.HTTP_200_OK)
+        if cart.is_model_cart():
+            cart_list = CartList.objects.filter(cart=cart.cart).order_by('product_id')
+            return Response(CartSerializer(cart_list, many=True).data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                CartSessionSerializer(cart.get_cart_for_serializer(), many=True).data,
+                status=status.HTTP_200_OK
+            )
+
+
+class CreateOrder(GenericAPIView):
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        cart = Cart(self.request)
+        if cart.is_model_cart():
+            return CartList.objects.filter(cart=cart.cart).order_by('product_id')
+        else:
+            return None
+
+    def post(self, request):
+        cart = Cart(request)
+        cart_list = CartList.objects.select_related('product').filter(cart=cart.cart)
+        cart_summ = CartList.objects.filter(cart=cart.cart).aggregate(total=Sum(F('product__price') * F('count')))
+
+        delivery_type = DeliveryType.objects.get(id=1)
+        default_delivery = Delivery.objects.create(type=delivery_type, city='', address='')
+        payment_type = PaymentType.objects.get(id=1)
+        payment_status = PaymentStatus.objects.get(id=1)
+        default_payment = Payment.objects.create(type=payment_type, status=payment_status)
+
+        new_order = Order.objects.create(
+            user=request.user,
+            total_cost=float(cart_summ['total']),
+            delivery=default_delivery,
+            payment=default_payment,
+        )
+        for item in cart_list:
+            OrderList.objects.create(order=new_order, product=item.product, count=item.count)
+        cart.cart.delete()
+        return Response({"orderId": new_order.id})
+
+
+class GetOrder(APIView):
+    def get(self, request, pk):
+        order = Order.objects.get(id=pk)
+        return Response(GetOrderSerializer(order).data)

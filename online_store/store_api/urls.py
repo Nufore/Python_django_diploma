@@ -8,7 +8,8 @@ from .views import (
     GetTags,
     PopularProducts, LimitedProducts, Banners,
     Sale,
-    GetBasket
+    Basket,
+    CreateOrder, GetOrder
 )
 from .profile_views import (sign_out, SignIn, SignUp, ProfileView, ProfileUpdatePassword, ProfileUpdateAvatar)
 
@@ -33,5 +34,7 @@ urlpatterns = [
     path('products/limited/', LimitedProducts.as_view({'get': 'list'})),
     path('banners/', Banners.as_view({'get': 'list'})),
     path('sales/', Sale.as_view({'get': 'list'})),
-    path('basket/', GetBasket.as_view()),
+    path('basket/', Basket.as_view()),
+    path('orders/', CreateOrder.as_view()),
+    path('order/<str:pk>/', GetOrder.as_view())
 ]

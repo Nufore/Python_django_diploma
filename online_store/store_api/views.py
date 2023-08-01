@@ -186,25 +186,29 @@ class CreateOrder(GenericAPIView):
 
     def post(self, request):
         cart = Cart(request)
-        cart_list = CartList.objects.select_related('product').filter(cart=cart.cart)
-        cart_summ = CartList.objects.filter(cart=cart.cart).aggregate(total=Sum(F('product__price') * F('count')))
+        if cart.is_model_cart():
+            cart_list = CartList.objects.select_related('product').filter(cart=cart.cart)
+            cart_summ = CartList.objects.filter(cart=cart.cart).aggregate(total=Sum(F('product__price') * F('count')))
 
-        delivery_type = DeliveryType.objects.get(id=1)
-        default_delivery = Delivery.objects.create(type=delivery_type, city='', address='')
-        payment_type = PaymentType.objects.get(id=1)
-        payment_status = PaymentStatus.objects.get(id=1)
-        default_payment = Payment.objects.create(type=payment_type, status=payment_status)
+            delivery_type = DeliveryType.objects.get(id=1)
+            default_delivery = Delivery.objects.create(type=delivery_type, city='', address='')
+            payment_type = PaymentType.objects.get(id=1)
+            payment_status = PaymentStatus.objects.get(id=1)
+            default_payment = Payment.objects.create(type=payment_type, status=payment_status)
 
-        new_order = Order.objects.create(
-            user=request.user,
-            total_cost=float(cart_summ['total']),
-            delivery=default_delivery,
-            payment=default_payment,
-        )
-        for item in cart_list:
-            OrderList.objects.create(order=new_order, product=item.product, count=item.count)
-        cart.cart.delete()
-        return Response({"orderId": new_order.id})
+            new_order = Order.objects.create(
+                user=request.user,
+                total_cost=float(cart_summ['total']),
+                delivery=default_delivery,
+                payment=default_payment,
+            )
+            for item in cart_list:
+                OrderList.objects.create(order=new_order, product=item.product, count=item.count)
+            cart.cart.delete()
+            return Response({"orderId": new_order.id})
+        else:
+            new_order = Order.objects.last()
+            return Response({"orderId": new_order.id + 1})
 
 
 class GetOrder(APIView):

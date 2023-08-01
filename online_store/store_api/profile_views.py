@@ -13,7 +13,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from .models import Profile
+from .cart import Cart
+from .models import Profile, UserCart, CartList, Product
 from .profile_serializers import (
     UserSerializer,
     AuthUserSerializer,
@@ -49,13 +50,23 @@ class SignUp(GenericAPIView):
     def post(self, request: Request) -> Response:
         data = json.loads(list(request.data.keys())[0])
         serializer = RegisterSerializer(data=data)
+        anon_cart = Cart(request)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             user = User.objects.get(username=data['username'])
             user.set_password(data['password'])
             user.save()
-            profile = Profile.objects.create(user=user, fullname=data['name'])
+            profile = Profile.objects.create(user=user, fullName=data['name'])
             profile.save()
+
+            if anon_cart.cart:
+                cart = UserCart.objects.create(user=user)
+                for item in anon_cart:
+                    CartList.objects.create(cart=cart,
+                                            product=Product.objects.get(id=int(item['product'].id)),
+                                            count=int(item['quantity']))
+                anon_cart.clear()
+
             user = authenticate(username=data['username'], password=data['password'])
             login(request, user)
             return Response({'user': serializer.data}, status=status.HTTP_201_CREATED)

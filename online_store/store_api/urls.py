@@ -9,7 +9,9 @@ from .views import (
     PopularProducts, LimitedProducts, Banners,
     Sale,
     Basket,
-    CreateOrder, GetOrder
+    CreateOrder, GetOrder,
+    PaymentView,
+    GetPaymentResponse,
 )
 from .profile_views import (sign_out, SignIn, SignUp, ProfileView, ProfileUpdatePassword, ProfileUpdateAvatar)
 
@@ -27,6 +29,7 @@ urlpatterns = [
     path('product/<str:pk>/', ProductViewSet.as_view({'get': 'retrieve'})),
     path('product/<str:pk>/review/', AddReview.as_view({'post': 'create'})),
     path('profile/', ProfileView.as_view()),
+    path('account/', ProfileView.as_view()),
     path('profile/password/', ProfileUpdatePassword.as_view()),
     path('profile/avatar/', ProfileUpdateAvatar.as_view()),
     path('tags/', GetTags.as_view()),
@@ -36,5 +39,7 @@ urlpatterns = [
     path('sales/', Sale.as_view({'get': 'list'})),
     path('basket/', Basket.as_view()),
     path('orders/', CreateOrder.as_view()),
-    path('order/<str:pk>/', GetOrder.as_view())
+    path('order/<str:pk>/', GetOrder.as_view()),
+    path('payment/<str:pk>/', PaymentView.as_view()),
+    path('get-payment-response/<str:pk>', GetPaymentResponse.as_view(), name='get-payment-response'),
 ]

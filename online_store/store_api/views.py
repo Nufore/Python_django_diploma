@@ -1,3 +1,4 @@
+import time
 from datetime import datetime, timedelta
 from rest_framework import status, mixins
 from rest_framework.utils import json
@@ -12,7 +13,7 @@ from drf_spectacular.utils import extend_schema
 from django.db.models import Sum, F
 
 from .models import Category, Product, Review, Tag, UserCart, CartList, Order, OrderList, Delivery, DeliveryType, \
-    Payment, PaymentType, PaymentStatus
+    PaymentType, Payment, PaymentStatus
 from .paginations import CatalogPagination
 from .filters import ProductFilter
 from .cart import Cart
@@ -210,8 +211,39 @@ class CreateOrder(GenericAPIView):
             new_order = Order.objects.last()
             return Response({"orderId": new_order.id + 1})
 
+    def get(self, request):
+        orders = Order.objects.filter(user=request.user)
+        return Response(GetOrderSerializer(orders, many=True).data, status=status.HTTP_200_OK)
+
 
 class GetOrder(APIView):
     def get(self, request, pk):
         order = Order.objects.get(id=pk)
         return Response(GetOrderSerializer(order).data)
+
+    def post(self, request, pk):
+        order = Order.objects.get(id=int(pk))
+        order.delivery.city = request.data.get('city')
+        order.delivery.address = request.data.get('address')
+        order.delivery.save()
+        order.payment.status = PaymentStatus.objects.get(id=2)
+        order.payment.save()
+        return Response({'message': 'ok'}, status=status.HTTP_200_OK)
+
+
+class PaymentView(APIView):
+    def post(self, request, pk):
+        order = Order.objects.get(id=int(pk))
+        order.payment.card_number = request.data.get('number')
+        order.payment.save()
+        return Response({'message': 'ok'}, status=status.HTTP_200_OK)
+
+
+class GetPaymentResponse(APIView):
+    def get(self, request, pk):
+        order = Order.objects.get(id=pk)
+        time.sleep(5)
+        if order.payment.status.id == 3:
+            return Response({'data': True})
+        else:
+            return Response({'data': False})

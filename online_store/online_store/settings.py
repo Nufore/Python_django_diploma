@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'frontend',
     'store_api',
+    'payment_scheduler',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',

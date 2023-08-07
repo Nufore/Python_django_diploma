@@ -7,7 +7,7 @@ var mix = {
 				: null
 			this.postData(`/api/payment/${orderId}/`, {
 				name: this.name,
-				number: this.number,
+				number: this.number.replaceAll(' ', ''),
 				year: this.year,
 				month: this.month,
 				code: this.code
@@ -19,7 +19,7 @@ var mix = {
 					this.year = ''
 					this.month = ''
 					this.code = ''
-					location.assign('/')
+					location.assign(`/progress-payment/${orderId}/`)
 				})
 				.catch(() => {
 					console.warn('Ошибка при оплате')

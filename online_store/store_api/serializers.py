@@ -264,7 +264,7 @@ class SaleSerializer(serializers.ModelSerializer):
 
 
 class GetOrderSerializer(serializers.ModelSerializer):
-    createdAt = serializers.DateTimeField(source='order_date')
+    createdAt = serializers.SerializerMethodField()
     fullName = serializers.CharField(source='user.profile.fullName')
     email = serializers.CharField(source='user.profile.email')
     phone = serializers.CharField(source='user.profile.phone')
@@ -275,10 +275,14 @@ class GetOrderSerializer(serializers.ModelSerializer):
     city = serializers.CharField(source='delivery.city')
     address = serializers.CharField(source='delivery.address')
     products = serializers.SerializerMethodField()
+    paymentError = serializers.CharField(source='payment.error_message')
 
     def get_products(self, obj):
         items = OrderList.objects.filter(order=obj)
         return CartSerializer(items, many=True).data
+
+    def get_createdAt(self, obj):
+        return obj.order_date.strftime("%Y-%m-%d %H:%M")
 
     class Meta:
         model = Order
@@ -295,4 +299,5 @@ class GetOrderSerializer(serializers.ModelSerializer):
             'city',
             'address',
             'products',
+            'paymentError',
         ]

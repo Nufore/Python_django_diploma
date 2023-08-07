@@ -30,7 +30,7 @@
                 <ul class="menu menu_vt">
                   <li class="menu-item"><a class="menu-link" href="/profile">Профиль</a>
                   </li>
-                  <li class="menu-item"><a class="menu-link" href="/historyorder">История заказов</a>
+                  <li class="menu-item"><a class="menu-link" href="/history-order">История заказов</a>
                   </li>
 <!--                  <li class="menu-item"><a class="menu-link" href="/historyview">История просмотра</a>-->
                   </li>
@@ -43,7 +43,34 @@
           <div class="Orders">
             <div v-for="order in orders" class="Order Order_anons">
               <div class="Order-personal">
-                <div class="row">
+                <div v-if="order.status !== 'accepted'" class="row">
+                  <div class="row-block">
+                    <a class="Order-title" :href="`/order-detail/${order.id}/`">
+                      Заказ&#32;<span class="Order-numberOrder">№${order.id}$</span>&#32;от&#32;<span class="Order-dateOrder">${order.createdAt}$</span></a>
+                  </div>
+                  <div class="row-block">
+                    <div class="Order-info Order-info_delivery">
+                      <div class="Order-infoType">Тип доставки:</div>
+                      <div class="Order-infoContent">${order.deliveryType}$</div>
+                    </div>
+                    <div class="Order-info Order-info_pay">
+                      <div class="Order-infoType">Оплата:</div>
+                      <div class="Order-infoContent">${order.paymentType}$</div>
+                    </div>
+                    <div class="Order-info">
+                      <div class="Order-infoType">Общая стоимость:
+                      </div>
+                      <div class="Order-infoContent">
+                        <span class="Order-price">${order.totalCost}$$</span>
+                      </div>
+                    </div>
+                    <div class="Order-info Order-info_status">
+                      <div class="Order-infoType">Статус:</div>
+                      <div class="Order-infoContent">${order.status}$</div>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="order.status == 'accepted'" class="row">
                   <div class="row-block">
                     <a class="Order-title" :href="`/orders/${order.id}/`">
                       Заказ&#32;<span class="Order-numberOrder">№${order.id}$</span>&#32;от&#32;<span class="Order-dateOrder">${order.createdAt}$</span></a>

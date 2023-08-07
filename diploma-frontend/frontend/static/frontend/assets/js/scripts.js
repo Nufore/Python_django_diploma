@@ -728,9 +728,9 @@ var Payment = function(){
                 e.preventDefault();
                 do {
                     billNumber = Math.random() + '';
-                    billNumber = billNumber.slice(-9, -1);
+                    billNumber = billNumber.slice(-17, -1);
                 } while(parseFloat(billNumber)%2!==0);
-                billNumber = billNumber.slice(0, 4) + ' ' + billNumber.slice(4, 8);
+                billNumber = billNumber.slice(0, 4) + ' ' + billNumber.slice(4, 8) + ' ' + billNumber.slice(8, 12) + ' ' + billNumber.slice(12, 16);
                 $bill.val(billNumber);
             });
             $('.Payment-pay .btn').on('click', function(e){

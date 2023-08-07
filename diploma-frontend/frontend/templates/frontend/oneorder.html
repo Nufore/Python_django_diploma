@@ -99,7 +99,7 @@
                     <strong class="Cart-title">Итого:<span class="Cart-price">${totalCost}$$</span>
                     </strong>
                   </div>
-                  <div class="Cart-block"><a class="btn btn_primary btn_lg" :href="`/payment/${orderId}/`">Оплатить</a>
+                  <div v-if="status !== 'paid'" class="Cart-block"><a class="btn btn_primary btn_lg" :href="`/payment/${orderId}/`">Оплатить</a>
                   </div>
                 </div>
               </div>

@@ -235,6 +235,7 @@ class PaymentView(APIView):
     def post(self, request, pk):
         order = Order.objects.get(id=int(pk))
         order.payment.card_number = request.data.get('number')
+        order.payment.error_message = None
         order.payment.save()
         return Response({'message': 'ok'}, status=status.HTTP_200_OK)
 

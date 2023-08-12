@@ -26,6 +26,9 @@ from .profile_serializers import (
 
 
 class SignIn(GenericAPIView):
+    """
+    Вход пользователя.
+    """
     serializer_class = AuthUserSerializer
 
     @extend_schema(tags=['auth'], description='sign in')
@@ -44,6 +47,9 @@ class SignIn(GenericAPIView):
 
 
 class SignUp(GenericAPIView):
+    """
+    Регистрация пользователя.
+    """
     serializer_class = UserSerializer
 
     @extend_schema(tags=['auth'], description='sign up')
@@ -77,11 +83,17 @@ class SignUp(GenericAPIView):
 @ensure_csrf_cookie
 @api_view(['POST'])
 def sign_out(request: Request) -> Response:
+    """
+    Выход из ЛК.
+    """
     logout(request)
     return Response({'detail': 'successful logout'}, status=status.HTTP_200_OK)
 
 
 class ProfileView(GenericAPIView):
+    """
+    View для отображения и изменения данных профиля.
+    """
     serializer_class = ProfileSerializer
 
     def get(self, request: Request) -> Response:
@@ -98,6 +110,9 @@ class ProfileView(GenericAPIView):
 
 
 class ProfileUpdatePassword(GenericAPIView):
+    """
+    Изменение пароля пользователя.
+    """
     serializer_class = UpdatePasswordSerializer
 
     def post(self, request: Request) -> Response:
@@ -109,6 +124,9 @@ class ProfileUpdatePassword(GenericAPIView):
 
 
 class ProfileUpdateAvatar(APIView):
+    """
+    Установка или изменение аватара профиля.
+    """
 
     def post(self, request):
         profile = get_object_or_404(Profile, user=request.user)

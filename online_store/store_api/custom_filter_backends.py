@@ -2,7 +2,13 @@ from django_filters.rest_framework import backends
 
 
 class CustomDFB(backends.DjangoFilterBackend):
+    """
+    Кастомный FilterBackend
+    """
     def get_filterset_kwargs(self, request, queryset, view):
+        """
+        Переопределение полученных в get запросе данных для их фильтрации в дальнейшем
+        """
 
         free_delivery = True if request.query_params.get('filter[freeDelivery]') == 'true' else None
         available = True if request.query_params.get('filter[available]') == 'true' else None

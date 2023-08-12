@@ -3,6 +3,14 @@ from store_api.models import PaymentStatus, Payment
 
 
 def payment_attempt():
+    """
+    Функция-джоб на проверку оплаты.
+    Логика:
+    ● если введённый номер чётный и не заканчивается на ноль, то оплата
+    подтверждается;
+    ● если введённый номер нечётный или заканчивается на ноль, то сервис
+    генерирует случайную ошибку оплаты.
+    """
     payment = Payment.objects.filter(status_id=2,
                                      card_number__isnull=False,
                                      error_message__isnull=True).order_by('id').first()

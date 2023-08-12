@@ -113,6 +113,9 @@ class Cart(object):
             return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
 
     def get_cart_for_serializer(self):
+        """
+        Данные для сериалайзера.
+        """
         cart_for_serializer = []
         for key, value in self.cart.items():
             cart_for_serializer.append(

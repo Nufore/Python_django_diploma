@@ -7,6 +7,9 @@ from rest_framework import serializers
 
 
 class Command(BaseCommand):
+    """
+    Для проверки работы сериализаторов. Запуск командой python manage.py agg
+    """
     def handle(self, *args, **options):
         self.stdout.write('Start demo agg')
         product1 = Product.objects.get(id=1)

@@ -5,6 +5,9 @@ from .models import Category, Product, Review, ProductImages, Tag, ProductSpecif
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
+    """
+    Serializer для категорий товаров.
+    """
     image = serializers.SerializerMethodField()
     subcategories = serializers.SerializerMethodField()
 
@@ -24,6 +27,9 @@ class CategoriesSerializer(serializers.ModelSerializer):
 
 
 class CreateReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializer для создания отзыва о товаре.
+    """
     def create(self, validated_data, user, product_id):
         product = Product.objects.get(id=product_id)
         review = Review.objects.create(
@@ -44,6 +50,9 @@ class CreateReviewSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializer для отзыва о товаре.
+    """
     date = serializers.SerializerMethodField()
 
     def get_date(self, obj):
@@ -62,12 +71,18 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ProductSpecificationsSerializer(serializers.ModelSerializer):
+    """
+    Serializer спецификации товара.
+    """
     class Meta:
         model = ProductSpecifications
         fields = ['name', 'value']
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):
+    """
+    Serializer для модели ProductImages.
+    """
     # image = serializers.SerializerMethodField()
     src = serializers.CharField(source='image.url')
     # alt = serializers.CharField()
@@ -84,6 +99,9 @@ class ProductImagesSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    """
+    Serializer модели Product.
+    """
     date = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
@@ -137,6 +155,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CatalogSerializer(ProductSerializer):
+    """
+    Измененный ProductSerializer для отображения количества отзывов о товаре.
+    """
 
     def get_reviews(self, obj):
         reviews = Review.objects.filter(product=obj).aggregate(Count('id'))
@@ -144,6 +165,9 @@ class CatalogSerializer(ProductSerializer):
 
 
 class CartSessionSerializer(serializers.Serializer):
+    """
+    Serializer для корзины неавторизованного пользователя.
+    """
     id = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
     price = serializers.DecimalField(max_digits=10, decimal_places=2)
@@ -192,6 +216,9 @@ class CartSessionSerializer(serializers.Serializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+    """
+    Serializer корзины авторизованного пользователя.
+    """
     id = serializers.IntegerField(source='product.id')
     category = serializers.IntegerField(source='product.category.id')
     price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2)
@@ -240,6 +267,9 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class SaleSerializer(serializers.ModelSerializer):
+    """
+    Сериалайзер для отображения товаров со скидками.
+    """
     salePrice = serializers.SerializerMethodField()
     dateFrom = serializers.SerializerMethodField()
     dateTo = serializers.SerializerMethodField()
@@ -264,6 +294,9 @@ class SaleSerializer(serializers.ModelSerializer):
 
 
 class GetOrderSerializer(serializers.ModelSerializer):
+    """
+    Сериазайзер для заказа.
+    """
     createdAt = serializers.SerializerMethodField()
     fullName = serializers.CharField(source='user.profile.fullName')
     email = serializers.CharField(source='user.profile.email')

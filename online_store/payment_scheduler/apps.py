@@ -6,5 +6,8 @@ class PaymentSchedulerConfig(AppConfig):
     name = 'payment_scheduler'
 
     def ready(self):
+        """
+        Запуск шедулера.
+        """
         from .jobs import updater
         updater.start_scheduler()

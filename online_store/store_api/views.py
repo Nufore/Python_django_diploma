@@ -30,6 +30,9 @@ from .serializers import (
 
 @extend_schema(tags=['catalog'])
 class CategoriesViewSet(mixins.ListModelMixin, GenericViewSet):
+    """
+    Вью для отображения категорий товаров.
+    """
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
     pagination_class = None
@@ -39,6 +42,9 @@ class CategoriesViewSet(mixins.ListModelMixin, GenericViewSet):
 
 
 class CatalogViewSet(mixins.ListModelMixin, GenericViewSet):
+    """
+    Вью для отображения товаров.
+    """
     queryset = Product.objects.all()
     serializer_class = CatalogSerializer
     pagination_class = CatalogPagination
@@ -50,6 +56,9 @@ class CatalogViewSet(mixins.ListModelMixin, GenericViewSet):
 
 @extend_schema(tags=['catalog'], description='get catalog popular items')
 class PopularProducts(mixins.ListModelMixin, GenericViewSet):
+    """
+    Вью для отображения на главной странице товаров в разделе POPULAR PRODUCTS
+    """
     queryset = Product.objects.order_by('-rating')[:4]
     serializer_class = CatalogSerializer
     pagination_class = None
@@ -58,6 +67,9 @@ class PopularProducts(mixins.ListModelMixin, GenericViewSet):
 
 @extend_schema(tags=['catalog'], description='get catalog limited items')
 class LimitedProducts(mixins.ListModelMixin, GenericViewSet):
+    """
+    Вью для отображения на главной странице товаров в разделе LIMITED EDITION
+    """
     queryset = Product.objects.order_by('count')[:4]
     serializer_class = CatalogSerializer
     pagination_class = None
@@ -66,6 +78,9 @@ class LimitedProducts(mixins.ListModelMixin, GenericViewSet):
 
 @extend_schema(tags=['catalog'], description='get banner items')
 class Banners(mixins.ListModelMixin, GenericViewSet):
+    """
+    Вью для отображения на главной странице товаров Banners
+    """
     serializer_class = CatalogSerializer
     pagination_class = None
     filterset_class = None
@@ -79,17 +94,26 @@ class Banners(mixins.ListModelMixin, GenericViewSet):
 
 
 class Sale(mixins.ListModelMixin, GenericViewSet):
+    """
+    Вью для отображения товаров на странице sale
+    """
     serializer_class = SaleSerializer
     pagination_class = CatalogPagination
     queryset = Product.objects.filter(sale__isnull=False, sale__date_to__gte=datetime.now() + timedelta(hours=3))
 
 
 class ProductViewSet(ModelViewSet):
+    """
+    Вью для отображения данных товара.
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
 class AddReview(ModelViewSet):
+    """
+    Добавление отзыва к товару.
+    """
     queryset = Review.objects.prefetch_related('product')
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
@@ -105,20 +129,22 @@ class AddReview(ModelViewSet):
 
 
 class GetTags(GenericAPIView):
+    """
+    Получение тэгов товаров.
+    """
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
     def get(self, request: Request) -> Response:
-        print('GetTags request.data:', request.data)
-        # products = Product.objects.filter(category__id=request.data.get('category'))
-        # products = Product.objects.filter(category__id=1)
         products = Product.objects.all()
         tags = Tag.objects.filter(product__in=products).distinct()
-        print('tags: ', tags)
         return Response(TagSerializer(tags, many=True).data)
 
 
 class Basket(GenericAPIView):
+    """
+    Вью для отображения корзины, добавления и удаления товара.
+    """
     # serializer_class = CartSerializer
 
     def get_serializer_class(self):
@@ -176,6 +202,9 @@ class Basket(GenericAPIView):
 
 
 class CreateOrder(GenericAPIView):
+    """
+    Создание заказа.
+    """
     serializer_class = CartSerializer
 
     def get_queryset(self):
@@ -217,6 +246,9 @@ class CreateOrder(GenericAPIView):
 
 
 class GetOrder(APIView):
+    """
+    Вью для направления на оплату заказа
+    """
     def get(self, request, pk):
         order = Order.objects.get(id=pk)
         return Response(GetOrderSerializer(order).data)
@@ -232,6 +264,9 @@ class GetOrder(APIView):
 
 
 class PaymentView(APIView):
+    """
+    Оплата заказа.
+    """
     def post(self, request, pk):
         order = Order.objects.get(id=int(pk))
         order.payment.card_number = request.data.get('number')
@@ -241,6 +276,10 @@ class PaymentView(APIView):
 
 
 class GetPaymentResponse(APIView):
+    """
+    Проверка статуса заказа.
+    Если 'paid' то True
+    """
     def get(self, request, pk):
         order = Order.objects.get(id=pk)
         time.sleep(5)

@@ -3,6 +3,9 @@ from .models import Product, Tag
 
 
 class ProductFilter(filters.FilterSet):
+    """
+    Фильтр товаров
+    """
     min_price = filters.NumberFilter(field_name="price", lookup_expr='gte')
     max_price = filters.NumberFilter(field_name="price", lookup_expr='lte')
     name = filters.CharFilter(field_name="title", lookup_expr='icontains')

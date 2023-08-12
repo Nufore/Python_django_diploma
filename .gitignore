@@ -2,7 +2,7 @@
 .DS_Store
 /venv/
 .idea/
-# media/
+media/
 
 # Byte-compiled / optimized / DLL recordsdata
 __pycache__

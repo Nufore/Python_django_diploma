@@ -54,9 +54,9 @@ class Product(models.Model):
     description = models.CharField(max_length=255)
     fullDescription = models.CharField(max_length=1000)
     freeDelivery = models.BooleanField(default=False)
-    rating = models.DecimalField(null=True, default=None, max_digits=3, decimal_places=2)
+    rating = models.DecimalField(null=True, default=None, blank=True, max_digits=3, decimal_places=2)
     reviews = models.IntegerField(default=0)
-    sale = models.OneToOneField(Sale, on_delete=models.SET_NULL, null=True)
+    sale = models.OneToOneField(Sale, on_delete=models.SET_NULL, null=True, default=None, blank=True)
 
     class Meta:
         ordering = ('id',)
@@ -79,8 +79,11 @@ class Product(models.Model):
 
 
 class ProductImages(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
     image = models.ImageField(default=None, null=True, upload_to='product_images/')
+
+    def __str__(self):
+        return f'id={self.pk}, name={self.image.name}'.replace('product_images/', '')
 
 
 class ProductSpecifications(models.Model):

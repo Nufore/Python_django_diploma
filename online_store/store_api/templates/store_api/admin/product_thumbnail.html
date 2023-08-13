@@ -1,0 +1,4 @@
+{% load thumbnail %}
+<a href="{{ image.url }}">
+    <img src="{{ image|thumbnail_url:'small' }}" />
+</a>

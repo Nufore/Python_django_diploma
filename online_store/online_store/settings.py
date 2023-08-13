@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'drf_spectacular',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -156,3 +157,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR.parent, 'diploma-frontend/frontend/static/med
 MEDIA_URL = '/media/'
 
 CART_SESSION_ID = 'cart'
+
+THUMBNAIL_ALIASES = {
+    "": {
+        "small": {"size": (150, 150)}
+    },
+}

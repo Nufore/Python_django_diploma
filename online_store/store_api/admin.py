@@ -24,11 +24,16 @@ class ProductImageInline(admin.TabularInline):
     productimage_thumbnail.short_description = _("Thumbnail")
 
 
+class SpecificationsInline(admin.TabularInline):
+    model = ProductSpecifications
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
     inlines = [
         ProductImageInline,
+        SpecificationsInline,
     ]
 
     def save_related(self, request, form, formsets, change):

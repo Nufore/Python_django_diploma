@@ -170,7 +170,8 @@ class CartSessionSerializer(serializers.Serializer):
     """
     id = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
-    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    # price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    price = serializers.SerializerMethodField()
     count = serializers.IntegerField(source='quantity')
     date = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
@@ -180,6 +181,12 @@ class CartSessionSerializer(serializers.Serializer):
     tags = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
     rating = serializers.SerializerMethodField()
+
+    def get_price(self, obj):
+        if obj['product'].sale and obj['product'].sale.date_to >= datetime.now() + timedelta(hours=3):
+            return obj['product'].price - obj['product'].sale.discount
+        else:
+            return obj['product'].price
 
     def get_id(self, obj):
         return obj['product'].id
@@ -221,7 +228,8 @@ class CartSerializer(serializers.ModelSerializer):
     """
     id = serializers.IntegerField(source='product.id')
     category = serializers.IntegerField(source='product.category.id')
-    price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2)
+    # price = serializers.DecimalField(source='product.price', max_digits=10, decimal_places=2)
+    price = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
     title = serializers.CharField(source='product.title')
     description = serializers.CharField(source='product.description')
@@ -230,6 +238,12 @@ class CartSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
     rating = serializers.CharField(source='product.rating')
+
+    def get_price(self, obj):
+        if obj.product.sale and obj.product.sale.date_to >= datetime.now() + timedelta(hours=3):
+            return obj.product.price - obj.product.sale.discount
+        else:
+            return obj.product.price
 
     def get_date(self, obj):
         return obj.product.date.strftime("%a %b %d %Y %H:%M:%S %Z%z")

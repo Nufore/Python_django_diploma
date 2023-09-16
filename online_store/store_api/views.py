@@ -222,7 +222,8 @@ class CreateOrder(GenericAPIView):
             discount_summ = CartList.objects.filter(cart=cart.cart).aggregate(
                 total=Sum(F('product__sale__discount') * F('count'))
             )
-            cart_summ['total'] -= discount_summ['total']
+            if discount_summ['total'] is not None:
+                cart_summ['total'] -= discount_summ['total']
 
             delivery_type = DeliveryType.objects.get(id=1)
             default_delivery = Delivery.objects.create(type=delivery_type, city='', address='')
